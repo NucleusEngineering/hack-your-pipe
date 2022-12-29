@@ -25,7 +25,6 @@ def index():
     print(envelope)
     print(type(envelope))
 
-
     if not envelope:
         msg = "no Pub/Sub message received"
         print(f"error: {msg}")
@@ -43,7 +42,6 @@ def index():
 
     rows_to_insert = [record]
 
-
     client = bigquery.Client(project='poerschmann-hackyourpipe', location='europe-west1')
     table_id = "poerschmann-hackyourpipe.retail_dataset.ecomm_events_run"
 
@@ -56,9 +54,6 @@ def index():
         return f"Bad Request: {envelope}", 400
 
     # print(f"Hello {name}!")
-
-    
-
 
 
 if __name__ == "__main__":
