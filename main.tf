@@ -25,7 +25,7 @@ terraform {
 
 provider "google" {
   project = var.project_id 
-  region  = "europe-west1"
+  region  = var.gcp_region
 }
 
 resource "google_compute_network" "vpc_network" {
@@ -107,7 +107,7 @@ resource "google_project_service" "pubsub" {
 
 resource "google_cloud_run_service" "pubsub_proxy_hyp" {
   name     = "pubsub-proxy-hyp"
-  location = "europe-west1"
+  location = var.gcp_region
 
   template {
     spec {
@@ -175,7 +175,7 @@ resource "google_bigquery_dataset" "bq_dataset" {
   dataset_id                  = "retail_dataset"
   friendly_name               = "retail dataset"
   description                 = "This is a test description"
-  location                    = "europe-west1"
+  location                    = var.gcp_region
   
   delete_contents_on_destroy = true
 
@@ -204,7 +204,7 @@ resource "google_bigquery_table" "bq_table" {
 
 resource "google_storage_bucket" "dataflow_gcs_bucket" {
     name = "${var.project_id}-ecommerce-events"
-    location = "europe-west1" 
+    location = var.gcp_region
     force_destroy = true
 }
 

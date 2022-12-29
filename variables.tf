@@ -29,3 +29,9 @@ variable "force_destroy" {
   type        = bool
   default     = false
 }
+
+variable "gcp_region" {
+  description = "GCP region to deploy resources in."
+  type = string
+  default = "europe-west1"
+}
