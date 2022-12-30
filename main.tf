@@ -262,11 +262,6 @@ resource "google_bigquery_table" "bq_table_psdirect" {
   table_id   = "ecommerce_events"
   deletion_protection = false
 
-  time_partitioning {
-    type = "DAY"
-    field = "event_datetime"
-  }
-
   labels = {
     env = "default"
   }
