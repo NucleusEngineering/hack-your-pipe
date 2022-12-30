@@ -315,6 +315,92 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
 }
 
 
+# Pipeline 3: Cloud Run Proxy -> Pub/Sub -> Cloud Run Processing -> BigQuery
+resource "google_cloud_run_service" "hyp_run_service_data_processing" {
+  name     = "hyp_run_service_data_processing"
+  location = var.gcp_region
+
+  template {
+    spec {
+      containers {
+        image = "gcr.io/${var.project_id}/data-processing-service"
+      }
+    }
+  }
+
+  traffic {
+    percent         = 100
+    latest_revision = true
+  }
+
+  depends_on = [google_project_service.run]
+}
+
+data "google_iam_policy" "noauth" {
+  binding {
+    role = "roles/run.invoker"
+    members = [
+      "allUsers",
+    ]
+  }
+}
+
+resource "google_cloud_run_service_iam_policy" "noauth" {
+  location    = google_cloud_run_service.hyp_run_service_data_processing.location
+  project     = google_cloud_run_service.hyp_run_service_data_processing.project
+  service     = google_cloud_run_service.hyp_run_service_data_processing.name
+  policy_data = data.google_iam_policy.noauth.policy_data
+}
+
+output "cloud_run_processing_service_url" {
+  value = google_cloud_run_service.hyp_run_service_data_processing.status[0].url
+}
+
+resource "google_pubsub_subscription" "hyp_sub_cloud_run" {
+  name  = "hyp_subscription_cloud_run"
+  topic = google_pubsub_topic.ps_topic.name
+
+  labels = {
+    created = "terraform"
+  }
+
+  push_config {
+    push_endpoint = google_cloud_run_service.hyp_run_service_data_processing.status[0].url
+
+    attributes = {
+      x-goog-version = "v1"
+    }
+  }
+
+  retain_acked_messages      = false
+
+  ack_deadline_seconds = 20
+
+
+  retry_policy {
+    minimum_backoff = "10s"
+  }
+
+  enable_message_ordering    = false
+}
+
+resource "google_bigquery_table" "bq_table_dataflow" {
+  dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
+  table_id   = "cloud_run"
+  deletion_protection = false
+
+  time_partitioning {
+    type = "DAY"
+    field = "event_datetime"
+  }
+
+  labels = {
+    env = "default"
+  }
+
+  schema = file("ecommerce_events_bq_schema.json")
+
+}
 
 
 
@@ -325,7 +411,3 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
 # -> BQ Table to sink
 # -> PubSub Subscription to receive
 # -> Cloud Run Service to process
-
-# TODO: Create Pipeline via direct PubSub BQ Subscription
-# -> PubSub Subscription to receive & process
-# -> BQ Table to sink
