@@ -18,7 +18,7 @@ terraform {
   required_providers {
     google = {
       source = "hashicorp/google"
-      version = "4.31.0"
+      version = "4.32.0"
     }
   }
 }
@@ -278,16 +278,13 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
   name  = "hyp_subscription_bq_direct"
   topic = google_pubsub_topic.ps_topic.name
 
-  labels = {
-    created = "terraform"
-  }
-
   bigquery_config {
     table = "${google_bigquery_table.bq_table.project}:${google_bigquery_table.bq_table.dataset_id}.${google_bigquery_table.bq_table.table_id}"
   }
 
-#  depends_on = [google_project_iam_member.viewer, google_project_iam_member.editor]
-
+  labels = {
+    created = "terraform"
+  }
   retain_acked_messages      = false
 
   ack_deadline_seconds = 20
