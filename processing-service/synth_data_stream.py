@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    endpoint = args.endpoint
+    endpoint = args.endpoint + '/json'
 
     while True:
         main(endpoint)
