@@ -278,6 +278,18 @@ resource "google_bigquery_table" "bq_table_bqdirect" {
 EOF
 }
 
+resource "google_project_iam_member" "viewer" {
+  project = var.project_id
+  role   = "roles/bigquery.metadataViewer"
+  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "editor" {
+  project = var.project_id
+  role   = "roles/bigquery.dataEditor"
+  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+}
+
 resource "google_pubsub_subscription" "sub_bqdirect" {
   name  = "hyp_subscription_bq_direct"
   topic = google_pubsub_topic.ps_topic.name
@@ -285,6 +297,8 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
   bigquery_config {
     table = "${google_bigquery_table.bq_table_bqdirect.project}:${google_bigquery_table.bq_table_bqdirect.dataset_id}.${google_bigquery_table.bq_table_bqdirect.table_id}"
   }
+
+  depends_on = [google_project_iam_member.viewer, google_project_iam_member.editor]
 
   labels = {
     created = "terraform"
@@ -300,17 +314,7 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
   enable_message_ordering    = false
 }
 
-resource "google_project_iam_member" "viewer" {
-  project = var.project_id
-  role   = "roles/bigquery.metadataViewer"
-  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
-}
 
-resource "google_project_iam_member" "editor" {
-  project = var.project_id
-  role   = "roles/bigquery.dataEditor"
-  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
-}
 
 
 
