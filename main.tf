@@ -191,7 +191,7 @@ resource "google_pubsub_topic" "ps_topic" {
 
 # Pipeline 1: Cloud Run Proxy -> Pub/Sub -> Dataflow -> BigQuery
 resource "google_pubsub_subscription" "hyp_sub_dataflow" {
-  name  = "hyp_subscription_bq_direct"
+  name  = "hyp_subscription_dataflow"
   topic = google_pubsub_topic.ps_topic.name
 
   labels = {
@@ -257,7 +257,7 @@ resource "google_dataflow_job" "dataflow_stream" {
 
 
 # Pipeline 2: Cloud Run Proxy -> Pub/Sub -> BigQuery
-resource "google_bigquery_table" "bq_table_psdirect" {
+resource "google_bigquery_table" "bq_table_bqdirect" {
   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
   table_id   = "pubsub_direct"
   deletion_protection = false
@@ -283,7 +283,7 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
   topic = google_pubsub_topic.ps_topic.name
 
   bigquery_config {
-    table = "${google_bigquery_table.bq_table_psdirect.project}:${google_bigquery_table.bq_table_psdirect.dataset_id}.${google_bigquery_table.bq_table_psdirect.table_id}"
+    table = "${google_bigquery_table.bq_table_bqdirect.project}:${google_bigquery_table.bq_table_bqdirect.dataset_id}.${google_bigquery_table.bq_table_bqdirect.table_id}"
   }
 
   labels = {
