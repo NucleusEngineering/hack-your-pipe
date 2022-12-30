@@ -84,6 +84,12 @@ resource "google_project_iam_member" "dataflow_pub_sub_viewer" {
   member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
 }
 
+resource "google_project_iam_member" "gce_pub_sub_admin" {
+  project = var.project_id
+  role = "roles/pubsub.admin"
+  member = "serviceAccount:${data.google_compute_default_service_account.default.email}"
+}
+
 
 # Enabling APIs
 
@@ -248,7 +254,7 @@ resource "google_dataflow_job" "dataflow_stream" {
 
 
 # Pipeline 2: Cloud Run Proxy -> Pub/Sub -> BigQuery
-resource "google_bigquery_table" "bq_table" {
+resource "google_bigquery_table" "bq_table_psdirect" {
   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
   table_id   = "ecommerce_events"
   deletion_protection = false
