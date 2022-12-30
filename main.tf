@@ -288,7 +288,7 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
   topic = google_pubsub_topic.ps_topic.name
 
   bigquery_config {
-    table = "${google_bigquery_table.bq_table.project}:${google_bigquery_table.bq_table.dataset_id}.${google_bigquery_table.bq_table.table_id}"
+    table = "${google_bigquery_table.bq_table_psdirect.project}:${google_bigquery_table.bq_table_psdirect.dataset_id}.${google_bigquery_table.bq_table_psdirect.table_id}"
   }
 
   labels = {
