@@ -28,6 +28,9 @@ provider "google" {
   region  = var.gcp_region
 }
 
+data "google_project" "project" {
+}
+
 resource "google_compute_network" "vpc_network" {
   name = "terraform-network"  
 }
@@ -53,7 +56,6 @@ resource "google_service_account" "data_pipeline_access" {
 
 
 # Set permissions.
-
 resource "google_project_iam_member" "dataflow_admin_role" {
   project = var.project_id
   role = "roles/dataflow.admin"
@@ -95,7 +97,6 @@ resource "google_project_iam_member" "gce_pub_sub_admin" {
 
 
 # Enabling APIs
-
 resource "google_project_service" "compute" {
   service = "compute.googleapis.com"
 
@@ -121,7 +122,6 @@ resource "google_project_service" "pubsub" {
 
 
 # Define common resources used by all pipeline options.
-
 # Cloud Run Proxy
 resource "google_cloud_run_service" "pubsub_proxy_hyp" {
   name     = "pubsub-proxy-hyp"
@@ -281,13 +281,13 @@ EOF
 resource "google_project_iam_member" "viewer" {
   project = var.project_id
   role   = "roles/bigquery.metadataViewer"
-  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_project_iam_member" "editor" {
   project = var.project_id
   role   = "roles/bigquery.dataEditor"
-  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
 }
 
 resource "google_pubsub_subscription" "sub_bqdirect" {
