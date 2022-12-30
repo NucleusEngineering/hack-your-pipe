@@ -212,7 +212,7 @@ resource "google_pubsub_subscription" "hyp_sub_dataflow" {
 
 resource "google_bigquery_table" "bq_table_dataflow" {
   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
-  table_id   = "ecommerce_events"
+  table_id   = "dataflow"
   deletion_protection = false
 
   time_partitioning {
@@ -259,7 +259,7 @@ resource "google_dataflow_job" "dataflow_stream" {
 # Pipeline 2: Cloud Run Proxy -> Pub/Sub -> BigQuery
 resource "google_bigquery_table" "bq_table_psdirect" {
   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
-  table_id   = "ecommerce_events"
+  table_id   = "pubsub_direct"
   deletion_protection = false
 
   labels = {
