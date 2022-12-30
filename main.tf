@@ -336,16 +336,7 @@ resource "google_cloud_run_service" "hyp_run_service_data_processing" {
   depends_on = [google_project_service.run]
 }
 
-data "google_iam_policy" "noauth" {
-  binding {
-    role = "roles/run.invoker"
-    members = [
-      "allUsers",
-    ]
-  }
-}
-
-resource "google_cloud_run_service_iam_policy" "noauth" {
+resource "google_cloud_run_service_iam_policy" "noauth_dp" {
   location    = google_cloud_run_service.hyp_run_service_data_processing.location
   project     = google_cloud_run_service.hyp_run_service_data_processing.project
   service     = google_cloud_run_service.hyp_run_service_data_processing.name
@@ -384,7 +375,7 @@ resource "google_pubsub_subscription" "hyp_sub_cloud_run" {
   enable_message_ordering    = false
 }
 
-resource "google_bigquery_table" "bq_table_dataflow" {
+resource "google_bigquery_table" "bq_table_cloud_run" {
   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
   table_id   = "cloud_run"
   deletion_protection = false
