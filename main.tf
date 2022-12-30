@@ -300,6 +300,19 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
   enable_message_ordering    = false
 }
 
+resource "google_project_iam_member" "viewer" {
+  project = var.project_id
+  role   = "roles/bigquery.metadataViewer"
+  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+}
+
+resource "google_project_iam_member" "editor" {
+  project = var.project_id
+  role   = "roles/bigquery.dataEditor"
+  member = "serviceAccount:service-${var.project_id.project.number}@gcp-sa-pubsub.iam.gserviceaccount.com"
+}
+
+
 
 
 
