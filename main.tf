@@ -328,6 +328,8 @@ resource "google_cloud_run_service" "hyp_run_service_data_processing" {
     }
   }
 
+  service_account_name = "${google_service_account.data_pipeline_access.email}"
+
   traffic {
     percent         = 100
     latest_revision = true
