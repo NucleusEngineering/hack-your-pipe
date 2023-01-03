@@ -15,5 +15,5 @@
  */
 
 
-project_id                  = "poerschmann-hackyourpipe"
+project_id                  = "poerschmann-hyp-test2"
 delete_contents_on_destroy  = true

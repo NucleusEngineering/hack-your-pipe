@@ -325,10 +325,9 @@ resource "google_cloud_run_service" "hyp_run_service_data_processing" {
       containers {
         image = "gcr.io/${var.project_id}/data-processing-service"
       }
+      service_account_name = "${google_service_account.data_pipeline_access.email}"
     }
   }
-
-  service_account_name = "${google_service_account.data_pipeline_access.email}"
 
   traffic {
     percent         = 100
