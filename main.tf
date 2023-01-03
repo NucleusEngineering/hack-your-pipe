@@ -317,7 +317,7 @@ resource "google_pubsub_subscription" "sub_bqdirect" {
 
 # Pipeline 3: Cloud Run Proxy -> Pub/Sub -> Cloud Run Processing -> BigQuery
 resource "google_cloud_run_service" "hyp_run_service_data_processing" {
-  name     = "hyp_run_service_data_processing"
+  name     = "hyp-run-service-data-processing"
   location = var.gcp_region
 
   template {
