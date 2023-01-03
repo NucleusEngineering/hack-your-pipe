@@ -43,7 +43,7 @@ def index():
     rows_to_insert = [record]
 
     client = bigquery.Client(project='poerschmann-hyp-test2', location='europe-west1')
-    table_id = "poerschmann-hyp-test2.cloud_run"
+    table_id = "poerschmann-hyp-test2.ecommerce_sink.cloud_run"
 
     errors = client.insert_rows_json(table_id, rows_to_insert)  # Make an API request.
     if errors == []:

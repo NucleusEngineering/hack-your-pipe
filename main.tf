@@ -392,13 +392,3 @@ resource "google_bigquery_table" "bq_table_cloud_run" {
   schema = file("ecommerce_events_bq_schema.json")
 
 }
-
-
-
-
-
-
-# TODO:  Create Pipeline via Cloud Run Processing Service
-# -> BQ Table to sink
-# -> PubSub Subscription to receive
-# -> Cloud Run Service to process
