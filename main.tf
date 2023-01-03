@@ -124,7 +124,7 @@ resource "google_project_service" "pubsub" {
 # Define common resources used by all pipeline options.
 # Cloud Run Proxy
 resource "google_cloud_run_service" "pubsub_proxy_hyp" {
-  name     = "pubsub-proxy-hyp"
+  name     = "hyp-run-service-pubsub-proxy"
   location = var.gcp_region
 
   template {
@@ -179,7 +179,7 @@ resource "google_bigquery_dataset" "bq_dataset" {
 
 # Pub/Sub Topic
 resource "google_pubsub_topic" "ps_topic" {
-  name = "ecommerce-events"
+  name = "hyp-pubsub-topic"
 
   labels = {
     created = "terraform"
