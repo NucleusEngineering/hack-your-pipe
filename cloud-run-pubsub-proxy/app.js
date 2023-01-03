@@ -37,7 +37,7 @@ app.post('/json', (req, res) => {
   const {Buffer} = require('safe-buffer');
 
   // Set Pub/Sub topic name
-  let topicName = 'ecommerce-events';
+  let topicName = 'hyp-run-service-pubsub-proxy';
 
   // References an existing topic
   const topic = pubsub.topic(topicName);
