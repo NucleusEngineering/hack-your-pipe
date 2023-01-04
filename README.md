@@ -125,17 +125,25 @@ gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifact
 gcloud config set compute/zone europe-west1
 ```
 
-# Build container
+# Build the Pub/Sub proxy service container
 
 ```
-export $RUN_PROXY_DIR=cloud-run-pubsub-proxy
+export RUN_PROXY_DIR=cloud-run-pubsub-proxy
 
 gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
 ```
 
+# Build the Data Processing service container
+
+```
+export RUN_PROCESSING_DIR=processing
+
+gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
+```
+
 ### List containers
 
-Check that the container was succesfully created
+Check that the containers were successfully created.
 
 ```
 gcloud container images list
@@ -146,6 +154,7 @@ You should see the following output:
 ```
 NAME
 gcr.io/<project-id>/pubsub-proxy
+gcr.io/<project-id>/data-processing-service
 Only listing images in gcr.io/<project-id>. Use --repository to list images in other repositories.
 ```
 
