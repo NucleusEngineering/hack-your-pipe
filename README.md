@@ -125,7 +125,9 @@ gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifact
 gcloud config set compute/zone europe-west1
 ```
 
-# Build the Pub/Sub proxy service container
+# Build the Cloud Run Containers
+
+## Pub/Sub proxy service container
 
 ```
 export RUN_PROXY_DIR=cloud-run-pubsub-proxy
@@ -133,10 +135,10 @@ export RUN_PROXY_DIR=cloud-run-pubsub-proxy
 gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
 ```
 
-# Build the Data Processing service container
+## Data Processing service container
 
 ```
-export RUN_PROCESSING_DIR=processing
+export RUN_PROCESSING_DIR=processing-service
 
 gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
 ```
