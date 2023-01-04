@@ -8,7 +8,7 @@ Business and tech requirements such as the number of data producers and consumer
 
 This repo provides practical guidance and sample architectures for the most common pipeline requirements I happened to come across with my customers.
 
-### We will find three unique solutions to ingest click stream data into BigQuery.
+## We will find three unique solutions to ingest click stream data into BigQuery.
 
 All examples find unique solutions for **ingesting click-stream data from a web-store to BigQuery**. 
 
@@ -19,12 +19,11 @@ Triggered events flow from Google Tag Manager through your Cloud Run Proxy to yo
 
 Once events arrived in your central event-hub, you need to decide on how to process and move them to BigQuery.
 
-### We cover three unique use cases for data processing and moving:
 
 ![Efficient GCP Data Pipelines Architecture Overview](rsc/efficient_pipelines.png)
 
 
-#### I. Lean ELT pipelines with raw data in BigQuery
+### I. Lean ELT pipelines with raw data in BigQuery
 
 Thinking about a scenario in which we aim to build the cheapest lowest maintenance data pipeline.
 Our only requirement might be to transport the raw data into BigQuery.
@@ -44,7 +43,7 @@ Introducing the direct Pub/Sub to BigQuery subscription:
 - Only limited sanity check possible when ingesting data
 
 
-#### II. Elastic ELT pipeline with Cloud Run
+### II. Elastic ELT pipeline with Cloud Run
 
 You might want to develop a pipeline that scales up and down easily, but still allows to apply simple transformations.
 For example, you might want to make data sanity checks, apply default cleaning or run ML inference over your data.
@@ -61,7 +60,7 @@ Introducing Cloud Run as data processing tool:
 - Only one-at-a-time datapoint handling, aggregations over multiple datapoints only possible once in BigQuery
 
 
-#### III. High-Volume ETL pipelines with complex aggregations using Dataflow
+### III. High-Volume ETL pipelines with complex aggregations using Dataflow
 
 
 **Strengths:**
