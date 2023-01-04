@@ -3,10 +3,9 @@ import time
 import base64
 import json
 
-import numpy as np
-import pandas as pd
+import config
 
-from flask import Flask, request, jsonify
+from flask import Flask, request
 
 from google.cloud import bigquery
 
@@ -42,8 +41,8 @@ def index():
 
     rows_to_insert = [record]
 
-    client = bigquery.Client(project='poerschmann-hyp-test2', location='europe-west1')
-    table_id = "poerschmann-hyp-test2.ecommerce_sink.cloud_run"
+    client = bigquery.Client(project=config.project_id, location=config.location)
+    table_id = config.project_id + '.' + config.bq_dataset + '.' + config.bq_table
 
     errors = client.insert_rows_json(table_id, rows_to_insert)  # Make an API request.
     if errors == []:
@@ -52,8 +51,6 @@ def index():
     else:
         print("Encountered errors while inserting rows: {}".format(errors))
         return f"Bad Request: {envelope}", 400
-
-    # print(f"Hello {name}!")
 
 
 if __name__ == "__main__":
