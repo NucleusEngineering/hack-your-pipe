@@ -1,6 +1,77 @@
-# Click stream data - Data Layer to Pub/Sub
+# Developing *efficient* Data Pipelines on GCP
 
-![Cloud Run Proxy](rsc/cloud-run-ps-proxy.png)
+Google Cloud Platform offers numerous possibilities and sample architectures to design data pipelines.
+As always, there is no **ONE** perfect data architecture. It always depends!!   
+
+The perfect architecture depends on the data-type, -volume and more. 
+Business and tech requirements such as the number of data producers and consumers or the intended data activation are also essential. 
+
+This repo provides practical guidance and sample architectures for the most common pipeline requirements I happened to come across with my customers.
+
+### We will find three unique solutions to ingest click stream data into BigQuery.
+
+All examples find unique solutions for **ingesting click-stream data from a web-store to BigQuery**. 
+
+Imagine you are a Data Engineer with the task to monitor specific click stream data from your company's web store.
+You already set up a Cloud Run Proxy Service that can be set-up as custom Tag in Google Tag Manager.
+Also, you defined a Pub/Sub topic as central event-hub. 
+Triggered events flow from Google Tag Manager through your Cloud Run Proxy to your Pub/Sub Topic.
+
+Once events arrived in your central event-hub, you need to decide on how to process and move them to BigQuery.
+
+### We cover three unique use cases for data processing and moving:
+
+![Efficient GCP Data Pipelines Architecture Overview](rsc/efficient_pipelines.png)
+
+
+#### I. Lean ELT pipelines with raw data in BigQuery
+
+Thinking about a scenario in which we aim to build the cheapest lowest maintenance data pipeline.
+Our only requirement might be to transport the raw data into BigQuery.
+For example, to design a Lakehouse structure.
+
+Introducing the direct Pub/Sub to BigQuery subscription:
+
+**Strengths:**
+- No data processing tool = major cost saving
+- No ETL maintenance
+- Raw data in lakehouse allows view based processing on use-case basis
+- Ingestion scales down to 0 and up without limits
+
+**Weaknesses:**
+- No processing or aggregations of ingested data before in BigQuery
+- Raw data volume in lakehouse might grow quickly 
+- Only limited sanity check possible when ingesting data
+
+
+#### II. Elastic ELT pipeline with Cloud Run
+
+You might want to develop a pipeline that scales up and down easily, but still allows to apply simple transformations.
+For example, you might want to make data sanity checks, apply default cleaning or run ML inference over your data.
+
+Introducing Cloud Run as data processing tool:
+
+**Strengths:**
+- Scales down to 0 and up with (almost) no limits
+- Easy integration of data transformations in any language and based on any dependencies
+- Easy entry, no steep learning curve for Kubernetes like container orchestration
+
+**Weaknesses:**
+- No graphic interface to explore data transformation steps
+- Only one-at-a-time datapoint handling, aggregations over multiple datapoints only possible once in BigQuery
+
+
+#### III. High-Volume ETL pipelines with complex aggregations using Dataflow
+
+
+**Strengths:**
+- Apache Beam allows for on-the-fly aggregations and windowing
+- Dataflow offers a user interface, great for troubleshooting
+
+**Weaknesses:**
+- Dataflow never scales down to 0
+- Despite serverless nature of dataflow, managing machines is extra overhead compared to e.g. Cloud Run
+
 
 This repo provides an end to end example for streaming data from a webstore to BigQuery. It contains the following components that can be deployed all at once using Terraform or serve as indvidual examples.
 
