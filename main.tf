@@ -344,9 +344,9 @@ resource "google_cloud_run_service_iam_policy" "noauth_dp" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-output "cloud_run_processing_service_url" {
-  value = google_cloud_run_service.hyp_run_service_data_processing.status[0].url
-}
+#output "cloud_run_processing_service_url" {
+#  value = google_cloud_run_service.hyp_run_service_data_processing.status[0].url
+#}
 
 resource "google_pubsub_subscription" "hyp_sub_cloud_run" {
   name  = "hyp_subscription_cloud_run"
