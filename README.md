@@ -154,9 +154,8 @@ gcloud container images list
 You should see the following output:
 
 ```
-NAME
-gcr.io/<project-id>/pubsub-proxy
-gcr.io/<project-id>/data-processing-service
+NAME: gcr.io/<project-id>/data-processing-service
+NAME: gcr.io/<project-id>/pubsub-proxy
 Only listing images in gcr.io/<project-id>. Use --repository to list images in other repositories.
 ```
 
