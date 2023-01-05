@@ -20,7 +20,7 @@ Triggered events flow from Google Tag Manager through your Cloud Run Proxy to yo
 Once events arrived in your central event-hub, you need to decide on how to process and move them to BigQuery.
 
 
-![Efficient GCP Data Pipelines Architecture Overview](rsc/efficient_pipelines.png)
+![Efficient GCP Data Pipelines Architecture Overview](../../rsc/efficient_pipelines.png)
 
 
 ### I. Lean ELT pipelines with raw data in BigQuery
