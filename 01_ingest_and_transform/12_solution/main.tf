@@ -224,7 +224,7 @@ resource "google_bigquery_table" "bq_table_dataflow" {
     env = "default"
   }
 
-  schema = file("ecommerce_events_bq_schema.json")
+  schema = file("./datalayer/ecommerce_events_bq_schema.json")
 
 }
 
@@ -390,6 +390,6 @@ resource "google_bigquery_table" "bq_table_cloud_run" {
     env = "default"
   }
 
-  schema = file("ecommerce_events_bq_schema.json")
+  schema = file("./datalayer/ecommerce_events_bq_schema.json")
 
 }
