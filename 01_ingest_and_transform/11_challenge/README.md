@@ -83,8 +83,6 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 ```
 
-... making sure that all reqiured APIs are enabled
-
 
 ## Challenge 0:
 
