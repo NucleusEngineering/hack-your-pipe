@@ -56,9 +56,13 @@ def index():
     rows_to_insert = [record]
 
     client = bigquery.Client(project=config.project_id, location=config.location)
+
+    client = '<BQ Client Definition>'
+
     table_id = config.project_id + '.' + config.bq_dataset + '.' + config.bq_table
 
-    errors = client.insert_rows_json(table_id, rows_to_insert)  # Make an API request.
+    errors = '<API Call to insert rows from json>'  # Make an API request.
+
     if errors == []:
         print(f"{time.time()} New rows have been added.")
         return ("", 204)

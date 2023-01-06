@@ -63,7 +63,7 @@ Our starting point will look something like this:
 Thus, the one of the fastest, most scalable and cost-efficient ways to build our proxy is Cloud Run.
 
 We need to build a container with the code for our proxy server.
-[Cloud Source Repository](https://cloud.google.com/source-repositories/docs/features) is a convenient choice for a GCP artifact repository.
+[Cloud Container Registry](https://cloud.google.com/artifact-registry/docs/overview) is a convenient choice for a GCP artifact repository.
 But of course you could use any other container repository.
 
 The repository `01_ingest_and_transform/11_challenge/cloud-run-proxy` contains the complete proxy code.
@@ -164,9 +164,9 @@ Data processing infrastructures often have vastly diverse technical and business
 We will find the right setup for three completely different settings.
 
 
-## Challenge 2.1:
-ELT is in! Imagine you don't actually want to set up processing.
-Instead, you would like to build a modern Lakehouse structure with ELT procesing.
+## Challenge 2.1
+[ELT is in!](https://cloud.google.com/bigquery/docs/migration/pipelines#elt)  Imagine you don't actually want to set up processing.
+Instead, you would like to build a [modern Lakehouse structure](https://cloud.google.com/blog/products/data-analytics/open-data-lakehouse-on-google-cloud) with ELT processing.
 Therefore, your  main concern at this point is to bring the incoming raw data into your Data Warehouse as cost-efficient as possible.
 Data users will worry about the processing.
 
@@ -187,56 +187,337 @@ Our pipeline will look something like this:
 </details>
 
 
-## Challenge 2.2:
-Implement it
+## Challenge 2.2
+To implement our lean ELT pipeline we need:
+- BigQuery Dataset
+- BigQuery Table
+- Pub/Sub BigQuery Subscription
 
-<details><summary>Suggested Solution</summary>
+### Preparation Steps
 
-Challenge Solution
+Before you continue please make sure that your Pub/Sub Service Account named something like `service-<project-number>@gcp-sa-pubsub.iam.gserviceaccount.com` has the roles `bigquery.dataEditor` and `bigquery.metadataViewer` granted. 
+This permits writing to BigQuery directly.
+
+```
+gcloud iam service-accounts add-iam-policy-binding \
+  --member serviceAccount:<pubsub_service_account_email> \
+  --role roles/bigquery.dataEditor \
+  --project <project_id>
+```
+
+```
+gcloud iam service-accounts add-iam-policy-binding \
+  --member serviceAccount:<pubsub_service_account_email> \
+  --role roles/bigquery.metadataViewer \
+  --project <project_id>
+```
+
+### Challenge
+
+Once permissions are set up start with creating a BigQuery Dataset named `ecommerce_sink`. The Dataset should contain a table named `pubsub_direct`.
+
+Continue by setting up a Pub/Sub Subscription named `hyp_subscription_bq_direct` that directly streams incoming messages in the BigQuery Table you created. 
+
+
+<details><summary>Hint</summary>
+
+This [documentation](https://cloud.google.com/pubsub/docs/create-subscription#subscription) might help.
 
 </details>
 
 
-# Part 3: Apply transformation and bring data to BigQuery as efficient as possible
+<details><summary>Suggested Solution</summary>
 
-## Challenge 3.1:
-Chose best architecture
+```
+
+gcloud pubsub subscriptions create hyp_subscription_bq_direct \
+  --topic=hyp-pubsub-topic \
+  --bigquery-table=<project-id>:ecommerce_sink.pubsub_direct
+
+```
+
+Alternatively, the [documentation](https://cloud.google.com/pubsub/docs/create-subscription#pubsub_create_bigquery_subscription-console) walks step-by-step through the creation of a BigQuery subscription in the console.
+
+</details>
+
+## Validate ELT Pipeline implementation
+
+You can now stream website interaction datapoints through your Cloud Run Proxy Service, Pub/Sub Topic & Subscription all the way up to your BigQuery destination table.
+
+Run 
+
+```
+python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
+```
+
+to direct an artificial click stream at your pipeline.
+
+After a minute or two you should find your BigQuery destination table populated with datapoints. 
+The metrics of Pub/Sub topic and Subscription should also show the throughput.
+Take a specific look at the un-acknowledged message metrics in Pub/Sub.
+If everything works as expected it should be 0.
+
+
+# Part 3: Apply simple transformations and bring data to BigQuery as cost-efficient as possible
+ELT is a great new concept. Although sometimes it just makes sense to apply transformation on incoming data directly. 
+What if we need to apply some general cleaning, or would like to apply machine learning inference on the incoming data at the soonest point possible?
+
+Traditional [ETL](https://cloud.google.com/bigquery/docs/migration/pipelines#etl) is a proven concept to do just that.
+
+But ETL tools are maintenance overhead. You do not want to manage a Spark, GKE cluster or similar.
+Specifically your requirement is a serverless ETL and elastic ETL pipeline.
+That means your pipeline should scale down to 0 when unused or up to whatever is needed to cope with a higher load.
+
+## Challenge 3.1
+Based on your current knowledge of GCP and non-GCP tools. What would be the ideal architecture to fulfill these requirements?
+
+Don't implement anything just yet. Let's only discuss the architecture for now.
 
 <details><summary>Suggested Solution</summary>
 
-Challenge Solution
+![Hack Your Pipe architecture](../../rsc/cloudrun_processing.png)
 
 </details>
 
 
-## Challenge 3.2:
-Implement it
+
+## Challenge 3.2
+First component of our lightweight ETL pipeline is a BigQuery Table named `cloud_run`.
+The BigQuery Table should make use of the schema file `./ecommerce_events_bq_schema.json`.
+The processing service will stream the transformed data into this table.
+
+<details><summary>Hint</summary>
+
+The [BigQuery documentation](https://cloud.google.com/bigquery/docs/tables) might be helpful to follow. 
+
+</details>
 
 <details><summary>Suggested Solution</summary>
 
-Challenge Solution
+Run this command
+
+```
+bq mk --table <project-id>:ecommerce_sink.cloud_run --schema ./ecommerce_events_bq_schema.json 
+```
+
+OR follow the documentation on how to [create a BigQuery table with schema through the console](https://cloud.google.com/bigquery/docs/tables#console).
 
 </details>
+
+
+## Challenge 3.3
+Second, let's set up your Cloud Run Processing Service. `./01_ingest_and_transform/11_challenge/processing-service` contains all necessary files.
+
+Inspect the `Dockerfile` to understand how the container will be build.
+
+`main.py` defines the webserver that handles the incoming datapoints. Inspect `main.py` to understand the webserver logic.
+As you can the `main.py` is missing two code snippets.
+
+Complete the webserver with the BigQuery client and Client API call to insert rows to BigQuery from a json object.
+Use the BigQuery Python SDK.
+
+Before you start coding replace the required variables in `config.py` so you can access them safely in `main.py`.
+
+<details><summary>Hint</summary>
+
+[Documentation for the BigQuery Python Client](https://cloud.google.com/python/docs/reference/bigquery/latest)
+
+</details>
+
+<details><summary>Suggested Solution</summary>
+
+Define the [BigQuery Python Client](https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.client.Client#google_cloud_bigquery_client_Client_insert_rows_json) as followed:
+```
+client = bigquery.Client(project=config.project_id, location=config.location)
+```
+
+Insert rows form JSON via [the Client's insert_rows_json method](https://cloud.google.com/python/docs/reference/bigquery/latest/google.cloud.bigquery.client.Client#google_cloud_bigquery_client_Client_insert_rows_json):
+```
+errors = client.insert_rows_json(table_id, rows_to_insert)  # Make an API request.
+```
+
+</details>
+
+# TODO: Add data transformation as additional challenge
+
+Once the code is completed build the container from `./01_ingest_and_transform/11_challenge/processing-service` into a new [Container Repository](https://cloud.google.com/artifact-registry/docs/overview) named `data-processing-service`.
+
+<details><summary>Suggested Solution</summary>
+
+```
+export PROCESSING_SERVICE_DIR=processing-service
+
+gcloud builds submit $PROCESSING_SERVICE_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
+```
+
+Validate the successful build with:
+
+```
+gcloud container images list
+```
+
+You should see something like:
+```
+NAME: gcr.io/<project-id>/pubsub-proxy
+NAME: gcr.io/<project-id>/data-processing-service
+Only listing images in gcr.io/<project-id>. Use --repository to list images in other repositories.
+```
+
+</details>
+
+## Challenge 3.4
+Define a Pub/Sub subscription named `hyp_subscription_cloud_run` that can forward incoming messages to an endpoint.
+The actual endpoint will be defined in the next challenge.
+
+<details><summary>Hint</summary>
+
+Read about [types of subscriptions](https://cloud.google.com/pubsub/docs/subscriber) and [how to create them](https://cloud.google.com/pubsub/docs/create-subscription#create_subscriptions).
+
+</details>
+
+<details><summary>Suggested Solution</summary>
+
+You will need to create a Push Subscription to the Pub/Sub topic we already defined.
+
+Use this command: 
+
+```
+gcloud pubsub subscriptions create hyp_subscription_cloud_run \
+    --topic=hyp-pubsub-topic \
+    --push-endpoint=PUSH_ENDPOINT
+```
+
+OR 
+
+read it can be [defined via the console](https://cloud.google.com/pubsub/docs/create-subscription#pubsub_create_push_subscription-console).
+
+</details>
+
+
+## Validate lightweight ETL pipeline implementation
+
+You can now stream website interaction datapoints through your Cloud Run Proxy Service, Pub/Sub Topic & Subscription, Cloud Run Processing and all the way up to your BigQuery destination table.
+
+Run 
+
+```
+python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
+```
+
+to direct an artificial click stream at your pipeline.
+
+After a minute or two you should find your BigQuery destination table populated with datapoints. 
+The metrics of Pub/Sub topic and Subscription should also show the throughput.
+Take a specific look at the un-acknowledged message metrics in Pub/Sub.
+If everything works as expected it should be 0.
 
 
 # Part 4: Apply transformation, apply aggregation & bring data to BigQuery as efficient as possible
+Cloud Run works smooth to apply simple data transformations. On top of that it scales to 0. So why not stop right there?
 
-## Challenge 4.1:
-Chose best architecture
+Let's think one step further. Imagine for example you need to apply aggregations, not only transformations. 
+For example, you might need the sum of all purchases made every hour.
+You might not want to manage Data Warehouse queries for that.
+You might want to have these aggregations directly computed on ingestion or use them to directly feed ML inference.
+
+Since Cloud Run handles incoming datapoints one-by-one it won't be able to do the job here.
+This is where [Apache Beam](https://beam.apache.org/documentation/basics/) comes to shine!
+
+## Challenge 4.1
+Based on your current GCP and non-GCP knowledge.
+How would the ideal architecture to satisfy above requirements look like?
+
+Don't start building just yet, lets discuss the architecture ideas first.
 
 <details><summary>Suggested Solution</summary>
 
-Challenge Solution
+Dataflow is a great tool to integrate into your pipeline for high volume data streams with complex transformations and aggregations.
+It is based on the open-source data processing framework Apache Beam.
+
+![Hack Your Pipe architecture](../../rsc/dataflow.png)
 
 </details>
 
 
-## Challenge 4.2: 
-Implement it
+## Challenge 4.2 
+First component of our dataflow ETL pipeline is a BigQuery Table named `dataflow`.
+The BigQuery Table should make use of the schema file `./ecommerce_events_bq_schema.json`.
+The processing service will stream the transformed data into this table.
 
 <details><summary>Suggested Solution</summary>
 
-Challenge Solution
+Run this command
+
+```
+bq mk --table <project-id>:ecommerce_sink.dataflow --schema ./ecommerce_events_bq_schema.json 
+```
+
+OR follow the documentation on how to [create a BigQuery table with schema through the console](https://cloud.google.com/bigquery/docs/tables#console).
+
+</details>
+
+
+Second component is the connection between Pub/Sub topic and Dataflow job.
+
+Define a Pub/Sub subscription named `hyp_subscription_dataflow` that can serve this purpose.
+You will define the actual dataflow job in the next step.
+
+<details><summary>Hint</summary>
+
+Read about [types of subscriptions](https://cloud.google.com/pubsub/docs/subscriber) and [how to create them](https://cloud.google.com/pubsub/docs/create-subscription#create_subscriptions).
+
+</details>
+
+<details><summary>Suggested Solution</summary>
+
+You will need to create a Pull Subscription to the Pub/Sub topic we already defined.
+This is a fundamental difference to the Push subscriptions we encountered in the previous two examples.
+Dataflow will pull the datapoints from the queue independently, depending on worker capacity.
+
+Use this command: 
+
+```
+gcloud pubsub subscriptions create hyp_subscription_dataflow \
+    --topic=hyp-pubsub-topic \
+```
+
+OR 
+
+read how it can be [defined via the console](https://cloud.google.com/pubsub/docs/create-subscription#pull_subscription).
+
+</details>
+
+
+
+## Challenge 4.3
+Finally, the last piece we are missing is your Dataflow job to apply transformations, aggregations and connect Pub/Sub queue with BigQuery Sink.
+
+Define a Dataflow job that transports data from your Pub/Sub Subscription to BigQuery
+
+<details><summary>Hint</summary>
+
+The easiest way to solve this is by using the [Pub/Sub Subscription to BigQuery](https://cloud.google.com/dataflow/docs/guides/templates/provided-streaming#console) template.
+
+</details>
+
+
+<details><summary>Suggested Solution</summary>
+
+Use this command to define a Dataflow Job based on the Pub/Sub Subscription to BigQuery template:
+
+```
+
+gcloud dataflow jobs run ecommerce-events-ps-to-bq-stream \
+    --gcs-location gs://dataflow-templates/VERSION/PubSub_Subscription_to_BigQuery \
+    --region europe-west1 \
+    --staging-location TEMP_LOCATION \
+    --parameters \
+inputSubscription=projects/<project-id>/subscriptions/hyp_subscription_dataflow,\
+outputTableSpec=<project-id>:DATASET.TABLE_NAME,\
+
+```
+
+[//]: # (# TODO: temp bucket)
 
 </details>
 
