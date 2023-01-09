@@ -25,13 +25,62 @@ gcloud config set project $GCP_PROJECT
 ... enabling your Google Cloud APIs.
 
 ```
-gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com dataflow.googleapis.com
+gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com dataflow.googleapis.com run.googleapis.com pubsub.googleapis.com
 ```
 
 ... setting your compute zone.
 
 ```
 gcloud config set compute/zone europe-west1
+```
+
+...creating a service account.
+```
+gcloud iam service-accounts create SA_NAME \
+    --display-name="retailpipeline-hyp"
+```
+
+... with the necessary permissions.
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+    --role="roles/dataflow.admin"
+
+```
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+    --role="roles/dataflow.worker"
+
+```
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+    --role="roles/bigquery.dataEditor"
+
+```
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+    --role="roles/pubsub.subscriber"
+
+```
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+    --role="roles/pubsub.viewer"
+
+```
+
+```
+gcloud projects add-iam-policy-binding PROJECT_ID \
+    --member="<project-number>-compute@developer.gserviceaccount.com" \
+    --role="roles/pubsub.admin"
+
 ```
 
 
@@ -283,7 +332,7 @@ Don't implement anything just yet. Let's only discuss the architecture for now.
 
 ## Challenge 3.2
 First component of our lightweight ETL pipeline is a BigQuery Table named `cloud_run`.
-The BigQuery Table should make use of the schema file `./ecommerce_events_bq_schema.json`.
+The BigQuery Table should make use of the schema file `./datalayer/ecommerce_events_bq_schema.json`.
 The processing service will stream the transformed data into this table.
 
 <details><summary>Hint</summary>
@@ -297,7 +346,7 @@ The [BigQuery documentation](https://cloud.google.com/bigquery/docs/tables) migh
 Run this command
 
 ```
-bq mk --table <project-id>:ecommerce_sink.cloud_run --schema ./ecommerce_events_bq_schema.json 
+bq mk --table <project-id>:ecommerce_sink.cloud_run --schema ./datalayer/ecommerce_events_bq_schema.json 
 ```
 
 OR follow the documentation on how to [create a BigQuery table with schema through the console](https://cloud.google.com/bigquery/docs/tables#console).
@@ -441,7 +490,7 @@ It is based on the open-source data processing framework Apache Beam.
 
 ## Challenge 4.2 
 First component of our dataflow ETL pipeline is a BigQuery Table named `dataflow`.
-The BigQuery Table should make use of the schema file `./ecommerce_events_bq_schema.json`.
+The BigQuery Table should make use of the schema file `./datalayer/ecommerce_events_bq_schema.json`.
 The processing service will stream the transformed data into this table.
 
 <details><summary>Suggested Solution</summary>
@@ -449,7 +498,7 @@ The processing service will stream the transformed data into this table.
 Run this command
 
 ```
-bq mk --table <project-id>:ecommerce_sink.dataflow --schema ./ecommerce_events_bq_schema.json 
+bq mk --table <project-id>:ecommerce_sink.dataflow --schema ./datalayer/ecommerce_events_bq_schema.json 
 ```
 
 OR follow the documentation on how to [create a BigQuery table with schema through the console](https://cloud.google.com/bigquery/docs/tables#console).

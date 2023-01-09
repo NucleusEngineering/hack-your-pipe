@@ -224,7 +224,7 @@ resource "google_bigquery_table" "bq_table_dataflow" {
     env = "default"
   }
 
-  schema = file("ecommerce_events_bq_schema.json")
+  schema = file("./datalayer/ecommerce_events_bq_schema.json")
 
 }
 
@@ -344,10 +344,6 @@ resource "google_cloud_run_service_iam_policy" "noauth_dp" {
   policy_data = data.google_iam_policy.noauth.policy_data
 }
 
-#output "cloud_run_processing_service_url" {
-#  value = google_cloud_run_service.hyp_run_service_data_processing.status[0].url
-#}
-
 resource "google_pubsub_subscription" "hyp_sub_cloud_run" {
   name  = "hyp_subscription_cloud_run"
   topic = google_pubsub_topic.ps_topic.name
@@ -390,6 +386,6 @@ resource "google_bigquery_table" "bq_table_cloud_run" {
     env = "default"
   }
 
-  schema = file("ecommerce_events_bq_schema.json")
+  schema = file("./datalayer/ecommerce_events_bq_schema.json")
 
 }
