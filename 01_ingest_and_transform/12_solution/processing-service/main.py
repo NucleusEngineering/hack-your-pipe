@@ -16,7 +16,7 @@ import os
 import time
 import base64
 import json
-
+import datetime
 import config
 
 from flask import Flask, request
@@ -44,14 +44,11 @@ def index():
         return f"Bad Request: {msg}", 400
 
     ps_message = envelope['message']
-    print(ps_message)
-    print(type(ps_message))
 
     record = base64.b64decode(ps_message["data"]).decode("utf-8").strip()
     record = json.loads(record)
 
-    print(record)
-    print(type(record))
+    record["weekday"] = datetime.datetime.strptime(record["event_datetime"], "%Y-%m-%d %H:%M:%S").strftime('%A')
 
     rows_to_insert = [record]
 
