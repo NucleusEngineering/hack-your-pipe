@@ -40,7 +40,7 @@ def main(endpoint):
 
     else:
         # decide between anomaly or no anomaly
-        if draw < 0.99:
+        if draw < 0.95:
             # get payload
             purchase_f = open('./datalayer/purchase.json')
             purchase_payload = json.load(purchase_f)
