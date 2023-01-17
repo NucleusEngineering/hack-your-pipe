@@ -1,17 +1,11 @@
-import logging
 import json
 import time
-import traceback
 
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
-from apache_beam.options import pipeline_options
+from apache_beam.transforms import trigger
 from apache_beam.io.gcp.pubsub import ReadFromPubSub
 from apache_beam.io.gcp.bigquery import BigQueryDisposition, WriteToBigQuery
-from apache_beam.io import WriteToText
-
-from apache_beam.runners.interactive.interactive_runner import InteractiveRunner
-import apache_beam.runners.interactive.interactive_beam as ib
 from apache_beam.runners import DataflowRunner
 
 
@@ -22,6 +16,31 @@ def is_item_view(event):
 
 def is_add_to_cart(event):
     return event['event'] == 'add_to_cart'
+
+
+def is_purchase(event):
+    return event['event'] == 'purchase'
+
+class ExtractValueFn(beam.DoFn):
+    def process(self, element):
+      print(f"ExtractValueFn: {element['ecommerce']['purchase']['value']}")
+      return [element['ecommerce']['purchase']['value']]
+
+class ExtractAndSumValue(beam.PTransform):
+  """A transform to extract key/score information and sum the scores.
+  The constructor argument `field` determines whether 'team' or 'user' info is
+  extracted.
+  """
+  def __init__(self):
+    beam.PTransform.__init__(self)
+    # self.field = field
+
+  def expand(self, pcoll):
+    print('expanding!')
+    return(
+        pcoll
+        | beam.Map(lambda elem: (elem['client_id'], elem['ecommerce']['purchase']['value']))
+        | beam.CombinePerKey(sum))
 
 
 def streaming_pipeline(project, region):
@@ -44,7 +63,7 @@ def streaming_pipeline(project, region):
         subnetwork='regions/europe-west1/subnetworks/terraform-network',
         service_account_email='retailpipeline-hyp@poerschmann-hyp-test2.iam.gserviceaccount.com',
         max_num_workers=1
-    )
+        )
 
     # Defining pipeline.
     p = beam.Pipeline(DataflowRunner(), options=options)
@@ -105,13 +124,42 @@ def streaming_pipeline(project, region):
                                                                    })
                     )
 
+    # class LogElementFn(beam.DoFn):
+    def LogElementFn(element):
+        print(
+            f"LogElementFn: {type(element)}; {element} #### {type(element['ecommerce'])}; {element['ecommerce']}  #### {type(element['ecommerce']['purchase'])}; {element['ecommerce']['purchase']} #### {type(element['ecommerce']['purchase']['value'])}; {element['ecommerce']['purchase']['value']}")
+        return element
+
+    def LogWindowedElements(element):
+        print(f'LogWindowFn: {type(element)}; {element}')
+        return element
+
     fixed_windowed_items = (json_message
-                            | 'window' >> beam.WindowInto(beam.window.FixedWindows(20),
-                                       trigger=beam.transforms.trigger.AfterProcessingTime(20),
-                                       accumulation_mode=beam.transforms.trigger.AccumulationMode.DISCARDING)
-                | 'Count elements by key' >> beam.combiners.Count.PerKey()
-                | 'Print result' >> beam.Map(print)
-               )
+                            # | 'Print Pcoll' >> beam.ParDo(print)
+                            | 'Filter for purchase' >> beam.Filter(is_purchase)
+                            # | 'Log Input' >> beam.ParDo(lambda x: ExtractValueFn(x))
+                            | 'Global Window' >> beam.WindowInto(beam.window.GlobalWindows(),
+                                                                 trigger=trigger.Repeatedly(
+                                                                     trigger.AfterCount(10)),
+                                                                 accumulation_mode=trigger.AccumulationMode.ACCUMULATING)
+                            # | 'Sum per window' >> beam.CombineGlobally(sum)
+                            # | 'Log Per Summed Window' >> beam.ParDo(lambda x: LogWindowedElements(x))
+                              | 'ExtractAndSumValue' >> ExtractAndSumValue()
+                            #   | 'Count' >> beam.transforms.combiners.Count.Globally()
+                            # | 'Extract Value' >> beam.ParDo(ExtractValueFn())
+                            #   | 'Print PColl' >> beam.ParDo(print) # -> working without pre steps!
+                            # | 'Log Windowed' >> beam.Map(lambda x: LogWindowedElements(x))
+                            # | 'Count elements by key' >> beam.combiners.Count.PerKey()
+                            )
+
+    # Writing summed values to BigQuery
+    test_schema = "user_id:STRING, summed_value:FLOAT"
+    test_value_table = "{}:ecommerce_sink.beam_test_value".format(project)
+    
+    # fixed_windowed_items | "Write Summed Values To BigQuery" >> WriteToBigQuery(table=test_value_table, schema=test_schema,
+    #                                                                 create_disposition=BigQueryDisposition.CREATE_IF_NEEDED,
+    #                                                                 write_disposition=BigQueryDisposition.WRITE_APPEND)
+
 
     # Writing the PCollections to two differnt BigQuery tables.
     item_views | "Write Items Views To BigQuery" >> WriteToBigQuery(table=item_views_table, schema=schema,
