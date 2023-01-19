@@ -25,47 +25,7 @@ def compile_pipe():
 
     def pipeline(project_id: str, region: str, timestamp_id: str, artifact_staging_location:str):
 
-        # Import Dataset
-        # dataset = dsl.importer(
-        #     artifact_uri=f"bq://{project_id}.ecommerce_sink.cloud_run",
-        #     artifact_class=dsl.Dataset)
-        
-        # Train BQ Model
-
-        # Train Custom Model
-
-        # Get endpoint through sdk.
-        # endpoint = aip.Endpoint(endpoint_name="test_endpoint2")
-
         aip.init(project=config.GCP_PROJECT, location=config.GCP_REGION)
-
-        # endpoint_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
-        # endpoint = dsl.importer(
-        #     artifact_uri=endpoint_uri,
-        #     artifact_class=VertexEndpoint,
-        #         metadata={
-        #         "resourceName": "projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
-        #     }
-        #   ).output
-        
-        # Model Import
-        # model = dsl.importer(
-        #     artifact_uri=f"anomaly_detection2",
-        #     artifact_class=dsl.Model)
-        
-        # model_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/models/anomaly_detection2"
-        # model = dsl.importer(
-        #     artifact_uri=model_uri,
-        #     artifact_class=VertexModel
-        #   ).output
-
-
-        # # Deploy models on endpoint
-        # created_endpoint = gcc_aip.EndpointCreateOp(
-        #     project=config.GCP_PROJECT,
-        #     display_name='hyp-test-endpoint',
-        #     location=config.GCP_REGION
-        # ).outputs['endpoint']
 
         bqml_query = f"""
                 CREATE OR REPLACE MODEL
@@ -111,12 +71,6 @@ def compile_pipe():
             display_name=f"anomaly_detection_{timestamp_id}",
             unmanaged_container_model=import_unmanaged_model_task.output,
         )
-
-        # endpoint = gcc_aip.EndpointCreateOp(
-        #     project=project_id,
-        #     location=region,
-        #     display_name=f"anomaly_detection_{timestamp_id}",
-        # ).after(model_upload)
 
         endpoint_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
         endpoint = dsl.importer(
