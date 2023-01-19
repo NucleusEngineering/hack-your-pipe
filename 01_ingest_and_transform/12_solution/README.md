@@ -92,7 +92,7 @@ cd HackYourPipe
 
 ## Set-up Cloud Environment
 
-### Initilize your account and project
+### Initialize your account and project
 
 If you are using the Google Cloud Shell you can skip this step.
 
@@ -105,12 +105,6 @@ gcloud init
 ```
 export GCP_PROJECT=<project-id>
 gcloud config set project $GCP_PROJECT
-```
-
-### Check Google Cloud Project config set correctly
-
-```
-gcloud config list
 ```
 
 ### Enable Google Cloud APIs
