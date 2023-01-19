@@ -6,11 +6,13 @@ import config
 # import kfp
 from kfp.v2 import compiler, dsl
 from kfp.v2.dsl import component
+from kfp.v2.components import importer_node
 import google.cloud.aiplatform as aip
 from google_cloud_pipeline_components import aiplatform as gcc_aip
 
-from google_cloud_pipeline_components.v1 import endpoint 
+from google_cloud_pipeline_components.v1 import endpoint, bigquery
 from google_cloud_pipeline_components.types.artifact_types import VertexModel, VertexEndpoint, UnmanagedContainerModel
+
 
 
 # TODO: Check for resources & create if needed before pipeline
@@ -21,7 +23,7 @@ def compile_pipe():
         name="anomaly-detection-test",
         pipeline_root=config.PIPELINE_ROOT_PATH)
 
-    def pipeline(project_id: str, region: str, timestamp_id: str):
+    def pipeline(project_id: str, region: str, timestamp_id: str, artifact_staging_location:str):
 
         # Import Dataset
         # dataset = dsl.importer(
@@ -37,6 +39,85 @@ def compile_pipe():
 
         aip.init(project=config.GCP_PROJECT, location=config.GCP_REGION)
 
+        # endpoint_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
+        # endpoint = dsl.importer(
+        #     artifact_uri=endpoint_uri,
+        #     artifact_class=VertexEndpoint,
+        #         metadata={
+        #         "resourceName": "projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
+        #     }
+        #   ).output
+        
+        # Model Import
+        # model = dsl.importer(
+        #     artifact_uri=f"anomaly_detection2",
+        #     artifact_class=dsl.Model)
+        
+        # model_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/models/anomaly_detection2"
+        # model = dsl.importer(
+        #     artifact_uri=model_uri,
+        #     artifact_class=VertexModel
+        #   ).output
+
+
+        # # Deploy models on endpoint
+        # created_endpoint = gcc_aip.EndpointCreateOp(
+        #     project=config.GCP_PROJECT,
+        #     display_name='hyp-test-endpoint',
+        #     location=config.GCP_REGION
+        # ).outputs['endpoint']
+
+        bqml_query = f"""
+                CREATE OR REPLACE MODEL
+                  `poerschmann-hyp-test2.ecommerce_sink.anomaly_detection`
+                OPTIONS
+                  ( MODEL_TYPE='KMEANS',
+                    NUM_CLUSTERS=2 ) AS
+                  SELECT
+                    ecommerce.purchase.tax AS tax,
+                    ecommerce.purchase.shipping AS shipping,
+                    ecommerce.purchase.value AS value
+                  FROM `poerschmann-hyp-test2.ecommerce_sink.cloud_run` 
+                  WHERE event='purchase'
+                ;
+        """
+
+        bqml_model = bigquery.BigqueryCreateModelJobOp(
+            project=project_id,
+            location=region,
+            query=bqml_query
+        )
+
+        bq_export = bigquery.BigqueryExportModelJobOp(
+            project=project_id,
+            location=region,
+            model=bqml_model.outputs["model"],
+            model_destination_path=f"{config.PIPELINE_ROOT_PATH}/bq_model-artifacts"
+        )
+
+        import_unmanaged_model_task = importer_node.importer(
+            artifact_uri=f"{config.PIPELINE_ROOT_PATH}/bq_model-artifacts",
+            artifact_class=UnmanagedContainerModel,
+            metadata={
+                "containerSpec": {
+                    "imageUri": "europe-docker.pkg.dev/vertex-ai/prediction/tf2-cpu.2-9:latest",
+                },
+            },
+        ).after(bq_export)
+
+        model_upload = gcc_aip.ModelUploadOp(
+            project=project_id,
+            location=region,
+            display_name=f"anomaly_detection_{timestamp_id}",
+            unmanaged_container_model=import_unmanaged_model_task.output,
+        )
+
+        # endpoint = gcc_aip.EndpointCreateOp(
+        #     project=project_id,
+        #     location=region,
+        #     display_name=f"anomaly_detection_{timestamp_id}",
+        # ).after(model_upload)
+
         endpoint_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
         endpoint = dsl.importer(
             artifact_uri=endpoint_uri,
@@ -45,24 +126,17 @@ def compile_pipe():
                 "resourceName": "projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
             }
           )
-        
-        # Model Import
-        # model = dsl.importer(
-        #     artifact_uri=f"anomaly_detection2",
-        #     artifact_class=dsl.Model)
-        
-        model_uri = "gs://poerschmann-hyp-test2/cloud_trained_model/anomaly_detection2/"
-        model = dsl.importer(
-            artifact_uri=model_uri,
-            artifact_class=VertexModel
-          )
-
+          
         # Deploy models on endpoint
-        model_deploy_op = gcc_aip.ModelDeployOp(
-            model=model.output,
+        _ = gcc_aip.ModelDeployOp(
+            model=model_upload.outputs["model"],
             endpoint=endpoint.output,
-            automatic_resources_min_replica_count=1,
-            automatic_resources_max_replica_count=1
+            dedicated_resources_min_replica_count=1,
+            dedicated_resources_max_replica_count=1,
+            # automatic_resources_min_replica_count=1,
+            # automatic_resources_max_replica_count=1,
+            dedicated_resources_machine_type=config.MACHINE_TYPE,
+            traffic_split={"0": 100}
         )
 
     compiler.Compiler().compile(pipeline_func=pipeline, package_path="hyp-anomaly-detection.json")
@@ -86,7 +160,8 @@ if __name__ == "__main__":
         parameter_values={
             'project_id': config.GCP_PROJECT,
             'region': config.GCP_REGION,
-            'timestamp_id': timestamp_id
+            'timestamp_id': timestamp_id,
+            'artifact_staging_location': config.PIPELINE_ROOT_PATH
         }
     )
 
