@@ -87,8 +87,6 @@ def compile_pipe():
             endpoint=endpoint.output,
             dedicated_resources_min_replica_count=1,
             dedicated_resources_max_replica_count=1,
-            # automatic_resources_min_replica_count=1,
-            # automatic_resources_max_replica_count=1,
             dedicated_resources_machine_type=config.MACHINE_TYPE,
             traffic_split={"0": 100}
         )
