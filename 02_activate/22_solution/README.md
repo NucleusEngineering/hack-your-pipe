@@ -78,7 +78,21 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 ```
 
-### Create Synthetic Data
+### Organisational Policies
+
+Depending on the setup within your organization you might have to [overwrite some organisational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
+
+For example, the following policies should not be enforced. 
+
+```
+constraints/sql.restrictAuthorizedNetworks
+constraints/compute.vmExternalIpAccess
+constraints/compute.requireShieldedVm
+constraints/storage.uniformBucketLevelAccess
+constraints/iam.allowedPolicyMemberDomains
+```
+
+## Create Synthetic Data
 
 You will use the clickstream data from the ingest and transform section as an example.
 
@@ -87,6 +101,7 @@ If you havent worked through the ingest and transform chapter follow `01_ingest_
 Before moving on make sure that your BigQuery project has a dataset `ecommerce_sink` with the tables `cloud_run`, `dataflow` and `pubsub_direct`.
 The tables should be populated with at least 1000 datapoints each.
 
+## Run ML Pipeline
 
 ### Set pipeline config options
 
@@ -108,4 +123,45 @@ and then run
 
 ```
 python3 kf_pipe.py
+```
+
+## Set up processing pipe for real time inference
+
+Once the model is trained and deployed you will include a real time inference call in the datapipeline and again stream the results to BigQuery.
+
+Use terraform to create a new BigQuery table as sink for your predictions. 
+
+```
+terraform init
+```
+
+```
+terraform plan
+```
+
+```
+terraform apply -var-file terraform.tfvars
+```
+
+
+To inlcude real time inference in your pipeline you have to update the Cloud Run processing service.
+That means you need build and deploy a new container version to your service.
+
+Set environment vairiables.
+
+```
+export RUN_INFERENCE_PROCESSING_SERVICE=inf_processing_service
+export GCP_PROJECT=<project-id>
+```
+
+Build the new container.
+
+```
+gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT/inference-processing-service
+```
+
+Deploy the new container to your Cloud Run service.
+
+```
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/<project-id>/inference-processing-service:latest --region=europe-west1
 ```
