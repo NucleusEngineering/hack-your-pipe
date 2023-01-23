@@ -29,7 +29,7 @@ def compile_pipe():
 
         bqml_query = f"""
                 CREATE OR REPLACE MODEL
-                  `poerschmann-hyp-test2.ecommerce_sink.anomaly_detection`
+                  `<project-id>.ecommerce_sink.anomaly_detection`
                 OPTIONS
                   ( MODEL_TYPE='KMEANS',
                     NUM_CLUSTERS=2 ) AS
@@ -37,7 +37,7 @@ def compile_pipe():
                     ecommerce.purchase.tax AS tax,
                     ecommerce.purchase.shipping AS shipping,
                     ecommerce.purchase.value AS value
-                  FROM `poerschmann-hyp-test2.ecommerce_sink.cloud_run` 
+                  FROM `<project-id>.ecommerce_sink.cloud_run` 
                   WHERE event='purchase'
                 ;
         """

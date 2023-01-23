@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-project_id                  = "poerschmann-hyp-test2"
+project_id                  = "<project-id>"
 delete_contents_on_destroy  = true
