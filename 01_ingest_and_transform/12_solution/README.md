@@ -113,7 +113,7 @@ gcloud config set project $GCP_PROJECT
 gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com dataflow.googleapis.com
 ```
 
-### Set compute zone
+### Set compute region
 
 ```
 gcloud config set compute/zone europe-west1
