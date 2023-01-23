@@ -1,0 +1,3 @@
+kfp
+google-cloud-aiplatform
+google_cloud_pipeline_components
