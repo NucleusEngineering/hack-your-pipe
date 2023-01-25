@@ -141,22 +141,13 @@ def streaming_pipeline(project, region):
         return element
 
     fixed_windowed_items = (json_message
-                            # | 'Print Pcoll' >> beam.ParDo(print)
                             | 'Filter for purchase' >> beam.Filter(is_purchase)
-                            # | 'Log Input' >> beam.ParDo(lambda x: ExtractValueFn(x))
                             | 'Global Window' >> beam.WindowInto(beam.window.GlobalWindows(),
                                                                  trigger=trigger.Repeatedly(
                                                                      trigger.AfterCount(10)),
                                                                  accumulation_mode=trigger.AccumulationMode.ACCUMULATING)
-                            # | 'Sum per window' >> beam.CombineGlobally(sum)
-                            # | 'Log Per Summed Window' >> beam.ParDo(lambda x: LogWindowedElements(x))
                             | 'ExtractAndSumValue' >> ExtractAndSumValue()
                             | 'FormatByRow' >> FormatByRow()
-                            #   | 'Count' >> beam.transforms.combiners.Count.Globally()
-                            # | 'Extract Value' >> beam.ParDo(ExtractValueFn())
-                            #  | 'Print PColl' >> beam.ParDo(print) # -> working without pre steps!
-                            # | 'Log Windowed' >> beam.Map(lambda x: LogWindowedElements(x))
-                            # | 'Count elements by key' >> beam.combiners.Count.PerKey()
                             )
 
     # Writing summed values to BigQuery
