@@ -96,7 +96,7 @@ cd HackYourPipe
 
 If you are using the Google Cloud Shell you can skip this step.
 
-```shell
+```
 gcloud init
 ```
 
@@ -141,6 +141,18 @@ gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
 export RUN_PROCESSING_DIR=processing-service
 
 gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
+```
+
+## Dataflow Template container
+
+```
+export DATAFLOW_TEMPLATE=beam
+
+gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processing-flex-template
+```
+
+```
+gcloud dataflow flex-template build gs://<bucket-name>/df_templates/dataflow_template.json --image=gcr.io/$GCP_PROJECT/beam-processing-flex-template --sdk-language=PYTHON
 ```
 
 ### List containers

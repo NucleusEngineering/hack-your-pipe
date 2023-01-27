@@ -1,14 +1,20 @@
-FROM python:3.9
+FROM gcr.io/dataflow-templates-base/python39-template-launcher-base:latest as template_launcher
 
-# Allow statements and log messages to immediately appear in the Knative logs
-ENV PYTHONUNBUFFERED True
+ARG WORKDIR=/dataflow/template
+RUN mkdir -p ${WORKDIR}
+WORKDIR ${WORKDIR}
 
 # Copy local code to the container image.
-ENV APP_HOME /app
-WORKDIR $APP_HOME
 COPY . ./
 COPY ./requirements.txt ./
+COPY ./beam_processing.py ./
 
-# Install production dependencies.
+# Flex Template ENV Vars
+ENV FLEX_TEMPLATE_PYTHON_PY_FILE="${WORKDIR}/beam_processing.py"
+ENV FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE="${WORKDIR}/requirements.txt"
+
+# Install requirements
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
+
+ENTRYPOINT ["/opt/google/dataflow/python_template_launcher"]
