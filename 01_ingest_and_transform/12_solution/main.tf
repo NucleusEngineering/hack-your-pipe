@@ -236,13 +236,8 @@ resource "google_storage_bucket" "dataflow_gcs_bucket" {
 
 resource "google_dataflow_job" "dataflow_stream" {
     name = "ecommerce-events-ps-to-bq-stream"
-    template_gcs_path = "gs://dataflow-templates/latest/PubSub_Subscription_to_BigQuery"
-    temp_gcs_location = "${google_storage_bucket.dataflow_gcs_bucket.url}/tmp_dir"
-
-    parameters = {
-      inputSubscription = google_pubsub_subscription.hyp_sub_dataflow.id
-      outputTableSpec   = "${google_bigquery_table.bq_table_dataflow.project}:${google_bigquery_table.bq_table_dataflow.dataset_id}.${google_bigquery_table.bq_table_dataflow.table_id}"
-    }
+    template_gcs_path = "${var.project_id}-ecommerce-events/df_templates/dataflow_template.json"
+    temp_gcs_location = "${var.project_id}-ecommerce-events/df_templates/tmp_dir"
 
     transform_name_mapping = {
         name = "test_job"
@@ -253,6 +248,7 @@ resource "google_dataflow_job" "dataflow_stream" {
     service_account_email = "${google_service_account.data_pipeline_access.email}"
     network = "${google_compute_network.vpc_network.name}"
     depends_on = [google_project_service.compute, google_project_service.dataflow]
+    max_workers = 1
 }
 
 
