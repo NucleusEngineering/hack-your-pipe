@@ -1,6 +1,8 @@
 import json
 import time
 
+import config
+
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
 from apache_beam.transforms import trigger
@@ -51,7 +53,7 @@ class FormatByRow(beam.PTransform):
 
 def streaming_pipeline(project, region):
     topic = "projects/{}/topics/hyp-pubsub-topic".format(project)
-    subscription = "projects/{}/subscriptions/hyp_test".format(project)
+    subscription = "projects/{}/subscriptions/hyp_subscription_dataflow".format(project)
     item_views_table = "{}:ecommerce_sink.beam_test_views".format(project)
     add_to_carts_table = "{}:ecommerce_sink.beam_test_carts".format(project)
     schema = "event_datetime:DATETIME, event:STRING, user_id:STRING, client_id:STRING, page:STRING, page_previous:STRING, " \
@@ -172,7 +174,7 @@ def streaming_pipeline(project, region):
 
 
 if __name__ == '__main__':
-    GCP_PROJECT = "poerschmann-hyp-test2"
-    GCP_REGION = "europe-west1"
+    GCP_PROJECT = config.project_id
+    GCP_REGION = config.location
 
     streaming_pipeline(project=GCP_PROJECT, region=GCP_REGION)

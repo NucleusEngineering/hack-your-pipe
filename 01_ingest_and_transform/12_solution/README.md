@@ -152,6 +152,10 @@ gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processin
 ```
 
 ```
+gsutil mb -c standard -l europe-west1 gs://$GCP_PROJECT-ecommerce-events
+```
+
+```
 gcloud dataflow flex-template build gs://$GCP_PROJECT-ecommerce-events/df_templates/dataflow_template.json --image=gcr.io/$GCP_PROJECT/beam-processing-flex-template --sdk-language=PYTHON
 ```
 
@@ -166,6 +170,7 @@ gcloud container images list
 You should see the following output:
 
 ```
+NAME: gcr.io/<project-id>/beam-processing-flex-template
 NAME: gcr.io/<project-id>/data-processing-service
 NAME: gcr.io/<project-id>/pubsub-proxy
 Only listing images in gcr.io/<project-id>. Use --repository to list images in other repositories.
