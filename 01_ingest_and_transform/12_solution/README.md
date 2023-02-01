@@ -96,7 +96,7 @@ cd HackYourPipe
 
 If you are using the Google Cloud Shell you can skip this step.
 
-```shell
+```
 gcloud init
 ```
 
@@ -151,6 +151,22 @@ export RUN_PROCESSING_DIR=processing-service
 gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
 ```
 
+## Dataflow Template container
+
+```
+export DATAFLOW_TEMPLATE=beam
+
+gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processing-flex-template
+```
+
+```
+gsutil mb -c standard -l europe-west1 gs://$GCP_PROJECT-ecommerce-events
+```
+
+```
+gcloud dataflow flex-template build gs://$GCP_PROJECT-ecommerce-events/df_templates/dataflow_template.json --image=gcr.io/$GCP_PROJECT/beam-processing-flex-template --sdk-language=PYTHON
+```
+
 ### List containers
 
 Check that the containers were successfully created.
@@ -162,6 +178,7 @@ gcloud container images list
 You should see the following output:
 
 ```
+NAME: gcr.io/<project-id>/beam-processing-flex-template
 NAME: gcr.io/<project-id>/data-processing-service
 NAME: gcr.io/<project-id>/pubsub-proxy
 Only listing images in gcr.io/<project-id>. Use --repository to list images in other repositories.

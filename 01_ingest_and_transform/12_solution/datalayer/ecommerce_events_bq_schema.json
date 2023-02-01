@@ -30,6 +30,11 @@
     "mode": "NULLABLE"
   },
   {
+    "name": "weekday",
+    "type": "STRING",
+    "mode": "NULLABLE"
+  },
+  {
     "name": "ecommerce",
     "type": "RECORD",
     "mode": "NULLABLE",
