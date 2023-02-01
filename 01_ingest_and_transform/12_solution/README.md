@@ -92,7 +92,7 @@ cd HackYourPipe
 
 ## Set-up Cloud Environment
 
-### Initilize your account and project
+### Initialize your account and project
 
 If you are using the Google Cloud Shell you can skip this step.
 
@@ -107,22 +107,30 @@ export GCP_PROJECT=<project-id>
 gcloud config set project $GCP_PROJECT
 ```
 
-### Check Google Cloud Project config set correctly
-
-```
-gcloud config list
-```
-
 ### Enable Google Cloud APIs
 
 ```
 gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com dataflow.googleapis.com
 ```
 
-### Set compute zone
+### Set compute region
 
 ```
 gcloud config set compute/zone europe-west1
+```
+
+### Organisational Policies
+
+Depending on the setup within your organization you might have to [overwrite some organisational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
+
+For example, the following policies should not be enforced. 
+
+```
+constraints/sql.restrictAuthorizedNetworks
+constraints/compute.vmExternalIpAccess
+constraints/compute.requireShieldedVm
+constraints/storage.uniformBucketLevelAccess
+constraints/iam.allowedPolicyMemberDomains
 ```
 
 # Build the Cloud Run Containers

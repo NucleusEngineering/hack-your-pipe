@@ -12,7 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-project_id = '<project-id>'
+project_id = 'poerschmann-hyp-test2'
 location = 'europe-west1'
 bq_dataset = 'ecommerce_sink'
 bq_table = 'cloud_run'
+bq_table_anomaly = 'cloud_run_anomaly'
+endpoind_id = '5981396031659573248'

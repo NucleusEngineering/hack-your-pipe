@@ -1,0 +1,5 @@
+GCP_PROJECT = "<project-id>"
+GCP_REGION = "europe-west1"
+PIPELINE_ROOT_PATH = "gs://<root-path>"
+SERVICE_ACCOUNT=f"retailpipeline-hyp@{GCP_PROJECT}.iam.gserviceaccount.com"
+MACHINE_TYPE = "n1-standard-4"
