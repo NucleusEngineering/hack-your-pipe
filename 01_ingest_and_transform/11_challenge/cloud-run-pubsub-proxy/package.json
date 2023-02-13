@@ -11,7 +11,7 @@
   "dependencies": {
     "express": "^4.17.1",
     "body-parser": "^1.19.0",
-    "@google-cloud/pubsub": "^0.28.1",
+    "@google-cloud/pubsub": "^3.3.0",
     "safe-buffer": "5.1.2"
   }
 }
