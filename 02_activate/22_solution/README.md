@@ -17,8 +17,8 @@ The architecture you are going to implement will look something like this:
 ## Git clone repo 
 
 ```
-git clone https://github.com/jakobap/HackYourPipe.git
-cd HackYourPipe
+git clone https://github.com/NucleusEngineering/hack-your-pipe.git
+cd hack-your-pipe
 ```
 
 ## Set-up Cloud Environment
@@ -78,9 +78,9 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 ```
 
-### Organisational Policies
+### Organizational Policies
 
-Depending on the setup within your organization you might have to [overwrite some organisational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
+Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
 For example, the following policies should not be enforced. 
 
@@ -94,12 +94,12 @@ constraints/iam.allowedPolicyMemberDomains
 
 ## Create Synthetic Data
 
-You will use the clickstream data from the ingest and transform section as an example.
+You will use the click stream data from the ingest and transform section as an example.
 
-If you havent worked through the ingest and transform chapter follow `01_ingest_and_transform/12_solution/README.md`.
+If you haven't worked through the ingest and transform chapter follow `01_ingest_and_transform/12_solution/README.md`.
 
 Before moving on make sure that your BigQuery project has a dataset `ecommerce_sink` with the tables `cloud_run`, `dataflow` and `pubsub_direct`.
-The tables should be populated with at least 1000 datapoints each.
+The tables should be populated with at least 1000 data points each.
 
 ## Run ML Pipeline
 
@@ -144,10 +144,10 @@ terraform apply -var-file terraform.tfvars
 ```
 
 
-To inlcude real time inference in your pipeline you have to update the Cloud Run processing service.
+To include real time inference in your pipeline you have to update the Cloud Run processing service.
 That means you need build and deploy a new container version to your service.
 
-Set environment vairiables.
+Set environment variables.
 
 ```
 export RUN_INFERENCE_PROCESSING_SERVICE=inf_processing_service

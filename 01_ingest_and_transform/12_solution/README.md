@@ -57,7 +57,7 @@ Introducing Cloud Run as data processing tool:
 
 **Weaknesses:**
 - No graphic interface to explore data transformation steps
-- Only one-at-a-time datapoint handling, aggregations over multiple datapoints only possible once in BigQuery
+- Only one-at-a-time data point handling, aggregations over multiple data points only possible once in BigQuery
 
 
 ### III. High-Volume ETL pipelines with complex aggregations using Dataflow
@@ -72,16 +72,16 @@ Introducing Cloud Run as data processing tool:
 - Despite serverless nature of dataflow, managing machines is extra overhead compared to e.g. Cloud Run
 
 
-This repo provides an end to end example for streaming data from a webstore to BigQuery. It contains the following components that can be deployed all at once using Terraform or serve as indvidual examples.
+This repo provides an end to end example for streaming data from a web store to BigQuery. It contains the following components that can be deployed all at once using Terraform or serve as individual examples.
 
 - Cloud Run service that can be set-up as a custom tag in Google Tag Manager.
 - Pub/Sub topic to consume the data
 - Pub/Sub subscription to pull the data from the topic
 - Dataflow streaming job using a Pub/Sub to BigQuery template
 - BigQuery events table to store the data
-- BigQuery SQL query to analyse the events
+- BigQuery SQL query to analyze the events
 
-The data structure is based on the [Data Layer Ecommerce](https://developers.google.com/tag-manager/ecommerce-ga4) format recommended for Google Tag Manager.
+The data structure is based on the [Data Layer E-Commerce](https://developers.google.com/tag-manager/ecommerce-ga4) format recommended for Google Tag Manager.
 
 ## Git clone repo 
 
@@ -119,9 +119,9 @@ gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifact
 gcloud config set compute/zone europe-west1
 ```
 
-### Organisational Policies
+### Organizational Policies
 
-Depending on the setup within your organization you might have to [overwrite some organisational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
+Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
 For example, the following policies should not be enforced. 
 
@@ -267,9 +267,9 @@ Outputs:
 cloud_run_proxy_url = https://pubsub-proxy-my-service-<id>-uc.a.run.app
 ```
 
-## Simulate sending ecommerce events to Cloud Run Pub/Sub proxy using curl
+## Simulate sending e-commerce events to Cloud Run Pub/Sub proxy using curl
 
-Use the `cloud_run_proxy_url` value from the Terraform output to simulate sending ecommerce events to the Cloud Run Pub/Sub proxy.
+Use the `cloud_run_proxy_url` value from the Terraform output to simulate sending e-commerce events to the Cloud Run Pub/Sub proxy.
 
 #### Set Cloud Run Proxy URL
 

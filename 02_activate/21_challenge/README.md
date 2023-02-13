@@ -67,9 +67,9 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 ```
 
-### Organisational Policies
+### Organizational Policies
 
-Depending on the setup within your organization you might have to [overwrite some organisational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
+Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
 For example, the following policies should not be enforced. 
 
@@ -84,8 +84,8 @@ constraints/iam.allowedPolicyMemberDomains
 
 ## Challenge 0: Architecture
 
-Before starting into the building, think about how you are envisioning the soltuion architecture.
-Based on the datapipeline you alreadu implemented we are looking for ways to train an ML model, save and version it, deploy it to an API and ideally orchestrate and automat the entire process.
+Before starting into the building, think about how you are envisioning the solution architecture.
+Based on the datapipeline you already implemented we are looking for ways to train an ML model, save and version it, deploy it to an API and ideally orchestrate and automat the entire process.
 
 With your current GCP and non-GCP knowledge, how would your solution architecture approximately look like?
 
@@ -128,7 +128,7 @@ To detect the synthetic anomalies in the purchase data you should train the k-me
 
 ```
 CREATE OR REPLACE MODEL
-  `poerschmann-hyp-test2.ecommerce_sink.anomaly_detection`
+  `<project-id>.ecommerce_sink.anomaly_detection`
 OPTIONS
   ( MODEL_REGISTRY = 'VERTEX_AI',
     MODEL_TYPE='KMEANS',
@@ -137,7 +137,7 @@ OPTIONS
     ecommerce.purchase.tax AS tax,
     ecommerce.purchase.shipping AS shipping,
     ecommerce.purchase.value AS value
-  FROM `poerschmann-hyp-test2.ecommerce_sink.cloud_run` 
+  FROM `<project-id>.ecommerce_sink.cloud_run` 
   WHERE event='purchase'
 ;
 ```
@@ -209,7 +209,7 @@ Finish coding up the inference processing service.
 <details><summary>Hint</summary>
 
 Check the docs for
-* [aiplatform SDK initialization](https://cloud.google.com/python/docs/reference/aiplatform/latest/google.cloud.aiplatform#google_cloud_aiplatform_init)
+* [AI Platform SDK initialization](https://cloud.google.com/python/docs/reference/aiplatform/latest/google.cloud.aiplatform#google_cloud_aiplatform_init)
 * [Endpoint definition](https://cloud.google.com/python/docs/reference/aiplatform/latest/google.cloud.aiplatform.Endpoint)
 * [Calling endpoint for prediction](https://cloud.google.com/python/docs/reference/aiplatform/latest/google.cloud.aiplatform.Endpoint#google_cloud_aiplatform_Endpoint_predict)
 * [BigQuery Insert](https://cloud.google.com/python/docs/reference/bigquery/latest)
@@ -218,7 +218,7 @@ Check the docs for
 
 <details><summary>Suggested Solution</summary>
 
-Aiplatform SDK initialisation
+AI Platform SDK initialization
 ```
 aiplatform.init(project=config.project_id, location=config.location)
 ```
@@ -226,7 +226,7 @@ aiplatform.init(project=config.project_id, location=config.location)
 Endpoint definition
 ```
 endpoint = aiplatform.Endpoint(
-    endpoint_name=f"projects/{config.project_id}/locations/{config.location}/endpoints/{config.endpoind_id}",
+    endpoint_name=f"projects/{config.project_id}/locations/{config.location}/endpoints/{config.endpoint_id}",
     project = config.project_id,
     location=config.location,
     )
@@ -250,7 +250,7 @@ Build Container
 
 ```
 export RUN_INFERENCE_PROCESSING_SERVICE=inf_processing_service
-export GCP_PROJECT=poerschmann-hyp-test2
+export GCP_PROJECT=<project-id>
 ```
 
 
@@ -260,7 +260,7 @@ gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT
 ```
 
 ```
-gcloud run deploy hyp-run-service-data-processing --image=gcr.io/poerschmann-hyp-test2/inference-processing-service:latest --region=europe-west1
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/<project-id>/inference-processing-service:latest --region=europe-west1
 ```
 
 
@@ -284,7 +284,7 @@ Solution
 </details>
 
 
-## Challange 6: Custom Model Deployment
+## Challenge 6: Custom Model Deployment
 
 Deploy custom model
 

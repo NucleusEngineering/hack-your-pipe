@@ -1,6 +1,6 @@
 # Data Ingestion and Transformation
 
-A short recap to our example use case. Let's say you have a webshop.
+A short recap to our example use case. Let's say you have a web shop.
 As Data Engineer you want to set up a solution to collect and analyze user interactions as shown below.  
 
 ![Hack Your Pipe architecture](../../rsc/hyp_architecture.png)
@@ -83,9 +83,9 @@ gcloud projects add-iam-policy-binding PROJECT_ID \
 
 ```
 
-### Organisational Policies
+### Organizational Policies
 
-Depending on the setup within your organization you might have to [overwrite some organisational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
+Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
 For example, the following policies should not be enforced. 
 
@@ -103,7 +103,7 @@ constraints/iam.allowedPolicyMemberDomains
 How would you design this pipeline based on your current knowledge? Which GCP and/or non-GCP tools would you use? 
 For now focus on the ingestion part of things.
 
-How would you collect datapoints and bring them into your cloud environment reliably?
+How would you collect data points and bring them into your cloud environment reliably?
 
 No actions needed yet. Please solely think about the architecture.
 
@@ -113,7 +113,7 @@ We will track user events on our website using [Google Tag Manager](https://deve
 To receive Google Tag manager events in our cloud environment we will use [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) to set up a proxy service.
 This proxy serves as public facing endpoint which can for example be set up as [custom tag](https://support.google.com/tagmanager/answer/6107167?hl=en) in Google Tag Manager.
 
-To distribute the collected datapoints for processing you will use [Pub/Sub](https://cloud.google.com/pubsub/docs/overview).
+To distribute the collected data points for processing you will use [Pub/Sub](https://cloud.google.com/pubsub/docs/overview).
 
 Our starting point will look something like this:
 
@@ -204,7 +204,7 @@ OR follow [these](https://cloud.google.com/pubsub/docs/admin#pubsub_create_topic
 
 ## Validate Event Ingestion
 
-You can now stream website interaction datapoints through a Cloud Run Proxy Service into your Pub/Sub Topic.
+You can now stream website interaction data points through a Cloud Run Proxy Service into your Pub/Sub Topic.
 
 The folder `01_ingest_and_transform/11_challenge/datalayer` contains everything you need to simulate a click-stream.
 You will find four .json files that define different types of messages.
@@ -241,7 +241,7 @@ Let's think about and discuss your architecture ideas first. Don't implement any
 
 One solution for this challenge would be to use BigQuery as Data Warehouse and a [Pub/Sub BigQuery Subscription](https://cloud.google.com/pubsub/docs/bigquery) as delivery tool.
 
-This elegant setup completely gets rid of the cost and maintenance of a separate data processing toolset.
+This elegant setup completely gets rid of the cost and maintenance of a separate data processing tool set.
 
 Our pipeline will look something like this:
 
@@ -305,7 +305,7 @@ Alternatively, the [documentation](https://cloud.google.com/pubsub/docs/create-s
 
 ## Validate ELT Pipeline implementation
 
-You can now stream website interaction datapoints through your Cloud Run Proxy Service, Pub/Sub Topic & Subscription all the way up to your BigQuery destination table.
+You can now stream website interaction data points through your Cloud Run Proxy Service, Pub/Sub Topic & Subscription all the way up to your BigQuery destination table.
 
 Run 
 
@@ -315,7 +315,7 @@ python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
 
 to direct an artificial click stream at your pipeline.
 
-After a minute or two you should find your BigQuery destination table populated with datapoints. 
+After a minute or two you should find your BigQuery destination table populated with data points. 
 The metrics of Pub/Sub topic and Subscription should also show the throughput.
 Take a specific look at the un-acknowledged message metrics in Pub/Sub.
 If everything works as expected it should be 0.
@@ -373,10 +373,10 @@ Second, let's set up your Cloud Run Processing Service. `./01_ingest_and_transfo
 
 Inspect the `Dockerfile` to understand how the container will be build.
 
-`main.py` defines the webserver that handles the incoming datapoints. Inspect `main.py` to understand the webserver logic.
+`main.py` defines the web server that handles the incoming data points. Inspect `main.py` to understand the web server logic.
 As you can the `main.py` is missing two code snippets.
 
-Complete the webserver with the BigQuery client and Client API call to insert rows to BigQuery from a json object.
+Complete the web server with the BigQuery client and Client API call to insert rows to BigQuery from a json object.
 Use the BigQuery Python SDK.
 
 Before you start coding replace the required variables in `config.py` so you can access them safely in `main.py`.
@@ -459,7 +459,7 @@ read it can be [defined via the console](https://cloud.google.com/pubsub/docs/cr
 
 ## Validate lightweight ETL pipeline implementation
 
-You can now stream website interaction datapoints through your Cloud Run Proxy Service, Pub/Sub Topic & Subscription, Cloud Run Processing and all the way up to your BigQuery destination table.
+You can now stream website interaction data points through your Cloud Run Proxy Service, Pub/Sub Topic & Subscription, Cloud Run Processing and all the way up to your BigQuery destination table.
 
 Run 
 
@@ -469,7 +469,7 @@ python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
 
 to direct an artificial click stream at your pipeline.
 
-After a minute or two you should find your BigQuery destination table populated with datapoints. 
+After a minute or two you should find your BigQuery destination table populated with data points. 
 The metrics of Pub/Sub topic and Subscription should also show the throughput.
 Take a specific look at the un-acknowledged message metrics in Pub/Sub.
 If everything works as expected it should be 0.
@@ -483,7 +483,7 @@ For example, you might need the sum of all purchases made every hour.
 You might not want to manage Data Warehouse queries for that.
 You might want to have these aggregations directly computed on ingestion or use them to directly feed ML inference.
 
-Since Cloud Run handles incoming datapoints one-by-one it won't be able to do the job here.
+Since Cloud Run handles incoming data points one-by-one it won't be able to do the job here.
 This is where [Apache Beam](https://beam.apache.org/documentation/basics/) comes to shine!
 
 ## Challenge 4.1
@@ -535,7 +535,7 @@ Read about [types of subscriptions](https://cloud.google.com/pubsub/docs/subscri
 
 You will need to create a Pull Subscription to the Pub/Sub topic we already defined.
 This is a fundamental difference to the Push subscriptions we encountered in the previous two examples.
-Dataflow will pull the datapoints from the queue independently, depending on worker capacity.
+Dataflow will pull the data points from the queue independently, depending on worker capacity.
 
 Use this command: 
 
