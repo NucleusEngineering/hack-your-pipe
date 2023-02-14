@@ -216,23 +216,23 @@ resource "google_pubsub_subscription" "hyp_sub_dataflow" {
   enable_message_ordering    = false
 }
 
-resource "google_bigquery_table" "bq_table_dataflow" {
-  dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
-  table_id   = "dataflow"
-  deletion_protection = false
-
-  time_partitioning {
-    type = "DAY"
-    field = "event_datetime"
-  }
-
-  labels = {
-    env = "default"
-  }
-
-  schema = file("./datalayer/ecommerce_events_bq_schema.json")
-
-}
+# resource "google_bigquery_table" "bq_table_dataflow" {
+#   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
+#   table_id   = "dataflow"
+#   deletion_protection = false
+# 
+#   time_partitioning {
+#     type = "DAY"
+#     field = "event_datetime"
+#   }
+# 
+#   labels = {
+#     env = "default"
+#   }
+# 
+#   schema = file("./datalayer/ecommerce_events_bq_schema.json")
+# 
+# }
 
 # resource "google_storage_bucket" "dataflow_gcs_bucket" {
 #     name = "${var.project_id}-ecommerce-events"
