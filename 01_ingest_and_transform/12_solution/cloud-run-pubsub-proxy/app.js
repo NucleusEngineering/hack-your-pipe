@@ -53,7 +53,7 @@ app.post('/json', (req, res) => {
 
   // Publishes a message to Pub/Sub
   return topic
-    .publishMessage(dataBuffer, customAttributes)
+    .publishMessage({data: dataBuffer})
     .then(() => res.status(200).send(`{"message": "pubsub message sent: ${dataBuffer}"}`))
     .catch(err => {
       console.error(err);
