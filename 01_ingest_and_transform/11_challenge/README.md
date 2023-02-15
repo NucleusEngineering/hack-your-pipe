@@ -129,10 +129,10 @@ We need to build a container with the code for our proxy server.
 [Cloud Container Registry](https://cloud.google.com/artifact-registry/docs/overview) is a convenient choice for a GCP artifact repository.
 But of course you could use any other container repository.
 
-The repository `01_ingest_and_transform/11_challenge/cloud-run-proxy` contains the complete proxy code.
+The repository `01_ingest_and_transform/11_challenge/cloud-run-pubsub-proxy` contains the complete proxy code.
 
 Create a new container repository named `pubsub-proxy`.
-Build the container described by `01_ingest_and_transform/11_challenge/cloud-run-proxy/Dockerfile` in it.
+Build the container described by `01_ingest_and_transform/11_challenge/cloud-run-pubsub-proxy/Dockerfile` in it.
 
 You will have to use the [gcloud builds submit](https://cloud.google.com/sdk/gcloud/reference/builds/submit) command.
 
