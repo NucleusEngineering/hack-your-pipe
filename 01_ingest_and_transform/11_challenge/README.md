@@ -36,49 +36,49 @@ gcloud config set compute/zone europe-west1
 
 ...creating a service account.
 ```
-gcloud iam service-accounts create SA_NAME \
+gcloud iam service-accounts create retailpipeline-hyp \
     --display-name="retailpipeline-hyp"
 ```
 
 ... with the necessary permissions.
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/dataflow.admin"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/dataflow.worker"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/bigquery.dataEditor"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/pubsub.subscriber"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/pubsub.viewer"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="<project-number>-compute@developer.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="$GCP_PROJECT-compute@developer.gserviceaccount.com" \
     --role="roles/pubsub.admin"
 
 ```
