@@ -86,8 +86,8 @@ The data structure is based on the [Data Layer E-Commerce](https://developers.go
 ## Git clone repo 
 
 ```
-git clone https://github.com/jakobap/HackYourPipe.git
-cd HackYourPipe
+git clone https://github.com/NucleusEngineering/hack-your-pipe.git
+cd hack-your-pipe/01_ingest_and_transform/12_solution
 ```
 
 ## Set-up Cloud Environment
