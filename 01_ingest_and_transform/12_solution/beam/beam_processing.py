@@ -54,7 +54,7 @@ class ExtractAndSumValue(beam.PTransform):
     def expand(self, pcoll):
         sum_val = (
             pcoll
-            | beam.Map(lambda elem: (elem['client_id'], elem['ecommerce']['purchase']['value']))
+            | beam.Map(lambda elem: (elem['user_id'], elem['ecommerce']['purchase']['value']))
             | beam.CombinePerKey(sum))
         return(sum_val)
 

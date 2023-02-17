@@ -116,7 +116,8 @@ gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifact
 ### Set compute region
 
 ```
-gcloud config set compute/zone europe-west1
+export GCP_REGION=europe-west1
+gcloud config set compute/zone $GCP_REGION
 ```
 
 ### Organizational Policies
@@ -134,6 +135,15 @@ constraints/iam.allowedPolicyMemberDomains
 ```
 
 # Build the Cloud Run Containers
+
+Update the default project ID in the following files to match your project ID: [beam/config.py](https://github.com/NucleusEngineering/hack-your-pipe/blob/main/01_ingest_and_transform/12_solution/beam/config.py), [processing_service/config.py](https://github.com/NucleusEngineering/hack-your-pipe/blob/main/01_ingest_and_transform/12_solution/processing-service/config.py)
+
+Check that the file has been saved with the updated project ID value
+
+```
+cat beam/config.py
+cat processing_service/config.py
+``` 
 
 ## Pub/Sub proxy service container
 
@@ -160,7 +170,7 @@ gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processin
 ```
 
 ```
-gsutil mb -c standard -l europe-west1 gs://$GCP_PROJECT-ecommerce-events
+gsutil mb -c standard -l $GCP_REGION gs://$GCP_PROJECT-ecommerce-events
 ```
 
 ```
@@ -296,3 +306,5 @@ Use Terraform to destroy all resources
 ```
 terraform destroy
 ```
+
+You might have to delete the BigQuery tables and rerun the command to destroy the resources.
