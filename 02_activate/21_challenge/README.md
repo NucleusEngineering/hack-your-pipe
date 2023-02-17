@@ -36,33 +36,34 @@ gcloud services enable aiplatform.googleapis.com storage.googleapis.com notebook
 ### Set compute zone
 
 ```
-gcloud config set compute/zone europe-west1
+export GCP_REGION=europe-west1
+gcloud config set compute/zone $GCP_REGION
 ```
 
 ### Create a service account.
 ```
-gcloud iam service-accounts create SA_NAME \
+gcloud iam service-accounts create retailpipeline-hyp \
     --display-name="retailpipeline-hyp"
 ```
 
 ### ... with the necessary permissions.
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/aiplatform.user"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/automl.serviceAgent"
 
 ```

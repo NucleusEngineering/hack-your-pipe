@@ -13,6 +13,14 @@ The architecture you are going to implement will look something like this:
 ![Hack Your Pipe architecture](../../rsc/hyp_ml_architecture.png)
 
 
+## Prerequisites: Create Synthetic Data
+
+You will use the click stream data from the [ingest and transform section](https://github.com/NucleusEngineering/hack-your-pipe/tree/main/01_ingest_and_transform) as an example.
+
+If you haven't worked through the ingest and transform chapter follow [`01_ingest_and_transform/12_solution/README.md`](https://github.com/NucleusEngineering/hack-your-pipe/blob/main/01_ingest_and_transform/12_solution/README.md).
+
+Before moving on make sure that your BigQuery project has a dataset `ecommerce_sink` with the tables `cloud_run`, `dataflow` and `pubsub_direct`.
+The tables should be populated with at least 1000 data points each.
 
 ## Git clone repo 
 
@@ -47,33 +55,36 @@ gcloud services enable aiplatform.googleapis.com storage.googleapis.com notebook
 ### Set compute zone
 
 ```
-gcloud config set compute/zone europe-west1
+export GCP_REGION=europe-west1
+gcloud config set compute/zone $GCP_REGION
 ```
 
 ### Create a service account.
+
 ```
-gcloud iam service-accounts create SA_NAME \
+gcloud iam service-accounts create retailpipeline-hyp \
     --display-name="retailpipeline-hyp"
 ```
+You might already have this from running the ingest and transform section. In such a case just add the below permissions.
 
 ### ... with the necessary permissions.
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/aiplatform.user"
 
 ```
 
 ```
-gcloud projects add-iam-policy-binding PROJECT_ID \
-    --member="serviceAccount:retailpipeline-hyp@<project-id>.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding $GCP_PROJECT \
+    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
     --role="roles/automl.serviceAgent"
 
 ```
@@ -92,20 +103,11 @@ constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
 ```
 
-## Create Synthetic Data
-
-You will use the click stream data from the ingest and transform section as an example.
-
-If you haven't worked through the ingest and transform chapter follow `01_ingest_and_transform/12_solution/README.md`.
-
-Before moving on make sure that your BigQuery project has a dataset `ecommerce_sink` with the tables `cloud_run`, `dataflow` and `pubsub_direct`.
-The tables should be populated with at least 1000 data points each.
-
 ## Run ML Pipeline
 
 ### Set pipeline config options
 
-Set the config options in `02_activate/22_solution/config.py`. 
+Set the config options in [`02_activate/22_solution/config.py`](https://github.com/NucleusEngineering/hack-your-pipe/blob/main/02_activate/22_solution/config.py). 
 
 
 ### Run Kubeflow Pipeline in Vertex
@@ -163,5 +165,5 @@ gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT
 Deploy the new container to your Cloud Run service.
 
 ```
-gcloud run deploy hyp-run-service-data-processing --image=gcr.io/<project-id>/inference-processing-service:latest --region=europe-west1
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=europe-west1
 ```
