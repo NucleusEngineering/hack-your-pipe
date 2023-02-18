@@ -282,12 +282,12 @@ To create the BigQuery Dataset run:
 ```
 bq --location=europe-west1 mk \
     --dataset \
-    <project-id>:ecommerce_sink
+    $GCP_PROJECT:ecommerce_sink
 ```
 
 To create the BigQuery destination table run:
 ```
-bq mk --table <project-id>:ecommerce_sink.pubsub_direct data:STRING
+bq mk --table $GCP_PROJECT:ecommerce_sink.pubsub_direct data:STRING
 ```
 
 Alternatively create the [Dataset](https://cloud.google.com/bigquery/docs/datasets#create-dataset) and [Table](https://cloud.google.com/bigquery/docs/tables#create_an_empty_table_with_a_schema_definition) via Cloud Console as indicated in the documentation.
@@ -299,7 +299,7 @@ To create the Pub/Sub subscription in the console run:
 
 gcloud pubsub subscriptions create hyp_subscription_bq_direct \
   --topic=hyp-pubsub-topic \
-  --bigquery-table=<project-id>:ecommerce_sink.pubsub_direct
+  --bigquery-table=$GCP_PROJECT:ecommerce_sink.pubsub_direct
 
 ```
 
