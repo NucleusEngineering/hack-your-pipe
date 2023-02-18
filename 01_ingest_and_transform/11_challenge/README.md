@@ -46,7 +46,7 @@ git clone https://github.com/NucleusEngineering/hack-your-pipe.git
 
 ... moving to the challenge directory
 ```
-cd hack-your-pipe/01_ingest_and_transform/12_solution/
+cd hack-your-pipe/01_ingest_and_transform/11_challenge
 ```
 
 ...creating a service account 
