@@ -22,10 +22,14 @@ import argparse
 def main(endpoint):
     draw = round(random.uniform(0, 1), 2)
 
+    uid = f'UID0000{int(round(random.uniform(0, 5), 0))}'
+
     if 0 <= draw < 1 / 3:
         # get view payload
         view_item_f = open('./datalayer/view_item.json')
         view_item_payload = json.load(view_item_f)
+
+        view_item_payload['user_id'] = uid
 
         # send view
         r = requests.post(endpoint, json=view_item_payload)
@@ -35,15 +39,19 @@ def main(endpoint):
         add_to_cart_f = open('./datalayer/add_to_cart.json')
         add_to_cart_payload = json.load(add_to_cart_f)
 
+        add_to_cart_payload['user_id'] = uid
+
         # send add to cart
         r = requests.post(endpoint, json=add_to_cart_payload)
 
     else:
         # decide between anomaly or no anomaly
-        if draw < 0.99:
+        if draw < 0.95:
             # get payload
             purchase_f = open('./datalayer/purchase.json')
             purchase_payload = json.load(purchase_f)
+
+            purchase_payload['user_id'] = uid
 
             # send request
             r = requests.post(endpoint, json=purchase_payload)
@@ -51,6 +59,8 @@ def main(endpoint):
             # get payload
             purchase_anomaly_f = open('./datalayer/purchase_anomaly.json')
             purchase_anomaly_payload = json.load(purchase_anomaly_f)
+
+            purchase_anomaly_payload['user_id'] = uid
 
             # send request
             r = requests.post(endpoint, json=purchase_anomaly_payload)
