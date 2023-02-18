@@ -468,12 +468,16 @@ Read about [types of subscriptions](https://cloud.google.com/pubsub/docs/subscri
 
 You will need to create a Push Subscription to the Pub/Sub topic we already defined.
 
-Use this command: 
+Set processing endpoint env var:
+```
+export PUSH_ENDPOINT=<processing endpoint service url>
+```
 
+Create PubSub push subscription: 
 ```
 gcloud pubsub subscriptions create hyp_subscription_cloud_run \
     --topic=hyp-pubsub-topic \
-    --push-endpoint=PUSH_ENDPOINT
+    --push-endpoint=$PUSH_ENDPOINT
 ```
 
 OR 
