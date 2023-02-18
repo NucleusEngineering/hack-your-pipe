@@ -443,8 +443,20 @@ Only listing images in gcr.io/<project-id>. Use --repository to list images in o
 </details>
 
 ## Challenge 3.4
+
+As you did before, deploy a new cloud run processing service based on the container you just build to your Container Registry.
+
+<details><summary>Suggested Solution</summary>
+
+```
+gcloud run deploy hyp-run-service-data-processing --image gcr.io/$GCP_PROJECT/data-processing-service:latest --region=europe-west1 --allow-unauthenticated
+```
+
+</details>
+
+
+## Challenge 3.5
 Define a Pub/Sub subscription named `hyp_subscription_cloud_run` that can forward incoming messages to an endpoint.
-The actual endpoint will be defined in the next challenge.
 
 <details><summary>Hint</summary>
 
