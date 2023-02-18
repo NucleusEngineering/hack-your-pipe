@@ -209,9 +209,7 @@ You can deploy services in multiple ways. For example through the console or com
 To deploy a new Cloud Run service from your container you can use:
 
 ```
-
-gcloud run deploy hyp-run-service-pubsub-proxy --image gcr.io/<project-id>/pubsub-proxy:latest
-
+gcloud run deploy hyp-run-service-pubsub-proxy --image gcr.io/<project-id>/pubsub-proxy:latest --region=europe-west1 --allow-unauthenticated
 ```
 
 To save the service endpoint URL in the environment variable `$ENDPOINT_URL` run: 
