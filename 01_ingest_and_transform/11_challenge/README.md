@@ -287,7 +287,7 @@ bq --location=europe-west1 mk \
 
 To create the BigQuery destination table run:
 ```
-bq mk --table $GCP_PROJECT:ecommerce_sink.pubsub_direct data:STRING
+bq mk --location=europe-west1 --table $GCP_PROJECT:ecommerce_sink.pubsub_direct data:STRING
 ```
 
 Alternatively create the [Dataset](https://cloud.google.com/bigquery/docs/datasets#create-dataset) and [Table](https://cloud.google.com/bigquery/docs/tables#create_an_empty_table_with_a_schema_definition) via Cloud Console as indicated in the documentation.
@@ -366,7 +366,7 @@ The [BigQuery documentation](https://cloud.google.com/bigquery/docs/tables) migh
 Run this command
 
 ```
-bq mk --table <project-id>:ecommerce_sink.cloud_run --schema ./datalayer/ecommerce_events_bq_schema.json 
+bq mk --location=europe-west1 --table $GCP_PROJECT:ecommerce_sink.cloud_run ./datalayer/ecommerce_events_bq_schema.json 
 ```
 
 OR follow the documentation on how to [create a BigQuery table with schema through the console](https://cloud.google.com/bigquery/docs/tables#console).
@@ -520,7 +520,7 @@ The processing service will stream the transformed data into this table.
 Run this command
 
 ```
-bq mk --table <project-id>:ecommerce_sink.dataflow --schema ./datalayer/ecommerce_events_bq_schema.json 
+bq mk --location=europe-west1 --table $GCP_PROJECT:ecommerce_sink.dataflow ./datalayer/ecommerce_events_bq_schema.json
 ```
 
 OR follow the documentation on how to [create a BigQuery table with schema through the console](https://cloud.google.com/bigquery/docs/tables#console).
