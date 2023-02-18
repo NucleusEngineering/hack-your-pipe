@@ -14,27 +14,13 @@ As Data Engineer you want to set up a solution to collect and analyze user inter
 
 Before you jump into the challenges make sure you GCP project is prepared by: 
 
-... initializing your account and project.
-
-```
-gcloud init
-```
-
 ... setting your Google Cloud Project.
-
 ```
 export GCP_PROJECT=<project-id>
 gcloud config set project $GCP_PROJECT
 ```
 
-... enabling your Google Cloud APIs.
-
-```
-gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifactregistry.googleapis.com dataflow.googleapis.com run.googleapis.com pubsub.googleapis.com
-```
-
 ... setting your compute zone.
-
 ```
 gcloud config set compute/zone europe-west1
 ```
@@ -49,53 +35,11 @@ git clone https://github.com/NucleusEngineering/hack-your-pipe.git
 cd hack-your-pipe/01_ingest_and_transform/11_challenge
 ```
 
-...creating a service account 
-```
-gcloud iam service-accounts create retailpipeline-hyp \
-    --display-name="retailpipeline-hyp"
-```
+... changing the project id in `./terraform.tfvars` to your own project id
 
-... to combine the permissions for our pipeline.
+... building the basic permissions & networking setup via terraform apply.
 ```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/dataflow.admin"
-
-```
-
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/dataflow.worker"
-
-```
-
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/bigquery.dataEditor"
-
-```
-
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/pubsub.subscriber"
-
-```
-
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/pubsub.viewer"
-
-```
-
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="$GCP_PROJECT-compute@developer.gserviceaccount.com" \
-    --role="roles/pubsub.admin"
-
+terraform apply -var-file terraform.tfvars
 ```
 
 ### Organizational Policies
