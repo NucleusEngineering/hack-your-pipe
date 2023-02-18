@@ -55,8 +55,6 @@ def index():
 
     rows_to_insert = [record]
 
-    client = bigquery.Client(project=config.project_id, location=config.location)
-
     client = '<BQ Client Definition>'
 
     table_id = config.project_id + '.' + config.bq_dataset + '.' + config.bq_table
