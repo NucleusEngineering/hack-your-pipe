@@ -39,6 +39,16 @@ gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifact
 gcloud config set compute/zone europe-west1
 ```
 
+... cloning the github repo
+```
+git clone https://github.com/NucleusEngineering/hack-your-pipe.git
+```
+
+... moving to the challenge directory
+```
+cd hack-your-pipe/01_ingest_and_transform/12_solution/
+```
+
 ...creating a service account 
 ```
 gcloud iam service-accounts create retailpipeline-hyp \
