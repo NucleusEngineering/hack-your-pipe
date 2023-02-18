@@ -55,7 +55,7 @@ class ExtractAndSumValue(beam.PTransform):
         sum_val = (
             pcoll
             | beam.Map(lambda elem: (elem['user_id'], elem['ecommerce']['purchase']['value']))
-            | beam.CombinePerKey(sum))
+            | '<Summing aggregation>'
         return(sum_val)
 
 
@@ -99,7 +99,7 @@ def streaming_pipeline(project, region):
     # Receiving message from Pub/Sub & parsing json from string.
     json_message = (p
                     # Listining to Pub/Sub.
-                    | "Read Topic" >> ReadFromPubSub(subscription=subscription)
+                    | "Read Topic" >> '<Read from PubSub Transform>'
                     # Parsing json from message string.
                     | "Parse json" >> beam.Map(json.loads)
                     )
@@ -130,10 +130,7 @@ def streaming_pipeline(project, region):
 
     fixed_windowed_items = (json_message
                             | 'Filter for purchase' >> beam.Filter(is_purchase)
-                            | 'Global Window' >> beam.WindowInto(beam.window.GlobalWindows(),
-                                                                 trigger=trigger.Repeatedly(
-                                                                     trigger.AfterCount(10)),
-                                                                 accumulation_mode=trigger.AccumulationMode.ACCUMULATING)
+                            | 'Global Window' >> '<Data Windowing>'
                             | 'ExtractAndSumValue' >> ExtractAndSumValue()
                             | 'FormatByRow' >> FormatByRow()
                             )

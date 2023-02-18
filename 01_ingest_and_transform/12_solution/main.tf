@@ -248,7 +248,6 @@ resource "google_dataflow_flex_template_job" "dataflow_stream" {
   project = var.project_id
   depends_on = [google_project_service.compute, google_project_service.dataflow]
   parameters = {
-    "key" = "value"
     "on_delete" = "cancel"
     "service_account_email" = "${google_service_account.data_pipeline_access.email}"
     "network" = "${google_compute_network.vpc_network.name}"
