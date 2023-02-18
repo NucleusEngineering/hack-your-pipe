@@ -588,7 +588,7 @@ Finally, all we are missing is your Dataflow job to apply transformations, aggre
 You need to apply custom aggregations on the incoming data.
 That means you need to create a dataflow job based on a [flex-template](https://cloud.google.com/dataflow/docs/guides/templates/using-flex-templates).
 
-Find & examine the pipeline code in `.01_ingest_and_transform/11_challenhe/beam`.
+Find & examine the pipeline code in `.01_ingest_and_transform/11_challenge/beam/beam_processing.py`.
 
 The pipeline is missing some code snippets. You will have to add one code snippet in  `ExtractAndSumValue.extract()` and two snippets in `streaming_pipeline()`.
 
@@ -596,6 +596,8 @@ You need to design a pipeline that aggregates the sum of the purchased item valu
 There should be an aggregation per 10 items purchased per user.
 
 The aggregated values should be written into your BigQuery table.
+
+Before you start coding replace the required variables in `config.py` so you can access them safely in `main.py`.
 
 <details><summary>Hint: Summing Aggregation</summary>
 
@@ -675,6 +677,11 @@ Build the beam folder content as container named `beam-processing-flex-template`
 
 <details><summary>Suggested Solution</summary>
 
+Back to challenge directory:
+```
+cd ..
+```
+
 Run
 
 ```
@@ -699,7 +706,7 @@ Checkour the [docs](https://cloud.google.com/sdk/gcloud/reference/dataflow/flex-
 
 Create a new bucket by running 
 ```
-gsutil mb -c standard -l $GCP_REGION gs://$GCP_PROJECT-ecommerce-events
+gsutil mb -c standard -l europe-west1 gs://$GCP_PROJECT-ecommerce-events
 ```
 
 Build the flex-template into your bucket using:
@@ -712,6 +719,8 @@ gcloud dataflow flex-template build gs://$GCP_PROJECT-ecommerce-events/df_templa
 
 Run a Dataflow job based on the flex-template you just created.
 
+The job creation will take 5-10 minutes.
+
 <details><summary>Hint</summary>
 
 The [documentation on the flex-template run command](https://cloud.google.com/sdk/gcloud/reference/dataflow/flex-template/run) should help.
@@ -722,7 +731,7 @@ The [documentation on the flex-template run command](https://cloud.google.com/sd
 <details><summary>Suggested Solution</summary>
 
 ```
-gcloud dataflow flex-template run my-job --template-file-gcs-location=gs://$GCP_PROJECT-ecommerce-events/df_templates/dataflow_template.json --region=europe-west1 --parameters=service-account-email="retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" --max-workers=1 --network=terraform-network
+gcloud dataflow flex-template run my-job3 --template-file-gcs-location=gs://$GCP_PROJECT-ecommerce-events/df_templates/dataflow_template.json --region=europe-west1 --service-account-email="retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" --max-workers=1 --network=terraform-network
 ```
 
 </details>
