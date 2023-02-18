@@ -418,6 +418,10 @@ You can use the [gcloud builds submit](https://cloud.google.com/sdk/gcloud/refer
 <details><summary>Suggested Solution</summary>
 
 ```
+cd ..
+```
+
+```
 export PROCESSING_SERVICE_DIR=processing-service
 
 gcloud builds submit $PROCESSING_SERVICE_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
