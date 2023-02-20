@@ -43,7 +43,7 @@ def compile_pipe():
 
         bqml_query = f"""
                 CREATE OR REPLACE MODEL
-                  `<project-id>.ecommerce_sink.anomaly_detection`
+                  `{config.GCP_PROJECT}.ecommerce_sink.anomaly_detection`
                 OPTIONS
                   ( MODEL_TYPE='KMEANS',
                     NUM_CLUSTERS=2 ) AS
@@ -51,7 +51,7 @@ def compile_pipe():
                     ecommerce.purchase.tax AS tax,
                     ecommerce.purchase.shipping AS shipping,
                     ecommerce.purchase.value AS value
-                  FROM `<project-id>.ecommerce_sink.cloud_run` 
+                  FROM `{config.GCP_PROJECT}.ecommerce_sink.cloud_run` 
                   WHERE event='purchase'
                 ;
         """
@@ -86,19 +86,26 @@ def compile_pipe():
             unmanaged_container_model=import_unmanaged_model_task.output,
         )
 
-        endpoint_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
-        endpoint = dsl.importer(
-            artifact_uri=endpoint_uri,
-            artifact_class=VertexEndpoint,
-                metadata={
-                "resourceName": "projects/79712439873/locations/europe-west1/endpoints/5981396031659573248"
-            }
-          )
+        # endpoint_uri = "https://europe-west1-aiplatform.googleapis.com/v1/projects/37042627607/locations/europe-west1/endpoints/2381190342041927680"
+        # endpoint = dsl.importer(
+        #     artifact_uri=endpoint_uri,
+        #     artifact_class=VertexEndpoint,
+        #         metadata={
+        #         "resourceName": "projects/37042627607/locations/europe-west1/endpoints/2381190342041927680"
+        #     }
+        #   )
+
+        new_endpoint = endpoint.EndpointCreateOp(
+            project=config.GCP_PROJECT,
+            location=config.GCP_REGION,
+            display_name=f'hyp_inference{int(time.time())}',
+            # network='terraform-network'
+        )
           
         # Deploy models on endpoint
         _ = gcc_aip.ModelDeployOp(
             model=model_upload.outputs["model"],
-            endpoint=endpoint.output,
+            endpoint=new_endpoint.outputs["endpoint"],
             dedicated_resources_min_replica_count=1,
             dedicated_resources_max_replica_count=1,
             dedicated_resources_machine_type=config.MACHINE_TYPE,

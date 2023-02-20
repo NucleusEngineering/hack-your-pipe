@@ -14,6 +14,6 @@
 
 GCP_PROJECT = "<project-id>"
 GCP_REGION = "europe-west1"
-PIPELINE_ROOT_PATH = "gs://<root-path>"
+PIPELINE_ROOT_PATH = f"gs://{GCP_PROJECT}-ecommerce-events"
 SERVICE_ACCOUNT=f"retailpipeline-hyp@{GCP_PROJECT}.iam.gserviceaccount.com"
 MACHINE_TYPE = "n1-standard-4"

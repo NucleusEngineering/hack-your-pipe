@@ -31,6 +31,39 @@ provider "google" {
 data "google_project" "project" {
 }
 
+# Enabling APIs
+resource "google_project_service" "aiplatform" {
+  service = "aiplatform.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "storage" {
+  service = "storage.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "notebooks" {
+  service = "notebooks.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "dataflow" {
+  service = "dataflow.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "artifactregistry" {
+  service = "artifactregistry.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+
+# Creating BigQuery Table
 resource "google_bigquery_table" "bq_table_run_anomaly" {
   dataset_id = "ecommerce_sink"
   table_id   = "cloud_run_anomaly"

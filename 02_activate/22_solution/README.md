@@ -153,7 +153,6 @@ Set environment variables.
 
 ```
 export RUN_INFERENCE_PROCESSING_SERVICE=inf_processing_service
-export GCP_PROJECT=<project-id>
 ```
 
 Build the new container.
