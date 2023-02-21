@@ -38,6 +38,11 @@ cd hack-your-pipe/01_ingest_and_transform/11_challenge
 ... changing the project id in `./terraform.tfvars` to your own project id
 
 ... building the basic permissions & networking setup via terraform apply.
+
+```
+terraform init
+```
+
 ```
 terraform apply -var-file terraform.tfvars
 ```
@@ -93,6 +98,8 @@ Our starting point will look something like this:
 ## Challenge 1.1: Building a container
 [Cloud Run](https://cloud.google.com/run/docs/overview/what-is-cloud-run) allows to set up serverless services based on a container we define.
 Thus, the one of the fastest, most scalable and cost-efficient ways to build our proxy is Cloud Run.
+
+([Click here if you need a brush-up on containers.](https://cloud.google.com/learn/what-are-containers#:~:text=Containers%20are%20packages%20of%20software,on%20a%20developer's%20personal%20laptop.))
 
 We need to build a container with the code for our proxy server.
 [Cloud Container Registry](https://cloud.google.com/artifact-registry/docs/overview) is a convenient choice for a GCP artifact repository.
