@@ -260,24 +260,7 @@ To implement our lean ELT pipeline we need:
 - BigQuery Table
 - Pub/Sub BigQuery Subscription
 
-Before you continue please make sure that your Pub/Sub Service Account named something like `service-<project-number>@gcp-sa-pubsub.iam.gserviceaccount.com` has the roles `bigquery.dataEditor` and `bigquery.metadataViewer` granted. 
-This permits writing to BigQuery directly.
-
-```
-gcloud iam service-accounts add-iam-policy-binding \
-  --member serviceAccount:<pubsub_service_account_email> \
-  --role roles/bigquery.dataEditor \
-  --project <project_id>
-```
-
-```
-gcloud iam service-accounts add-iam-policy-binding \
-  --member serviceAccount:<pubsub_service_account_email> \
-  --role roles/bigquery.metadataViewer \
-  --project <project_id>
-```
-
-Once permissions are set up start with creating a BigQuery Dataset named `ecommerce_sink`. The Dataset should contain a table named `pubsub_direct`.
+Start with creating a BigQuery Dataset named `ecommerce_sink`. The Dataset should contain a table named `pubsub_direct`.
 
 Continue by setting up a Pub/Sub Subscription named `hyp_subscription_bq_direct` that directly streams incoming messages in the BigQuery Table you created. 
 
