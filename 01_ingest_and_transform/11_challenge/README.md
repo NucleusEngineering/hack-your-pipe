@@ -575,7 +575,7 @@ Use this command:
 
 ```
 gcloud pubsub subscriptions create hyp_subscription_dataflow \
-    --topic=hyp-pubsub-topic \
+    --topic=hyp-pubsub-topic
 ```
 
 OR 
