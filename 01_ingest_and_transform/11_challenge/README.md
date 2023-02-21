@@ -443,6 +443,15 @@ Only listing images in gcr.io/<project-id>. Use --repository to list images in o
 
 As you did before, deploy a new cloud run processing service based on the container you just build to your Container Registry.
 
+<details><summary>Hint</summary>
+
+Check out the [Cloud Run Documentation](https://cloud.google.com/run/docs/deploying#service).
+
+You can deploy services in multiple ways. For example through the console or command line.
+
+</details>
+
+
 <details><summary>Suggested Solution</summary>
 
 ```
