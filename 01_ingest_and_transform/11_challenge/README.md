@@ -47,12 +47,22 @@ terraform init
 terraform apply -var-file terraform.tfvars
 ```
 
-Depending on your environment your might need to manually create the PubSub Service Accounts using: 
+Depending on your environment, you may experience an error due to missing PubSub Service Account. In this case, first destroy your resources:
+```
+terraform destroy
+```
+
+Then manually create the PubSub Service Accounts using: 
 
 ```
 gcloud beta services identity create --project $GCP_PROJECT --service pubsub
 ```
 
+and recreate resources:
+
+``
+terraform apply -var-file terraform.tfvars
+```
 
 ### Organizational Policies
 
