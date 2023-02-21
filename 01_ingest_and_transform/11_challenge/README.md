@@ -47,6 +47,13 @@ terraform init
 terraform apply -var-file terraform.tfvars
 ```
 
+Depending on your environment your might need to manually create the PubSub Service Accounts using: 
+
+```
+gcloud beta services identity create --project $GCP_PROJECT --service pubsub
+```
+
+
 ### Organizational Policies
 
 Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
