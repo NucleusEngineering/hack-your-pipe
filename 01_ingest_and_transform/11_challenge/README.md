@@ -614,7 +614,7 @@ There should be an aggregation per 10 items purchased per user.
 
 The aggregated values should be written into your BigQuery table.
 
-Before you start coding replace the required variables in `config.py` so you can access them safely in `main.py`.
+Before you start coding replace the required variables in `config.py` so you can access them safely in `beam_processing.py`.
 
 <details><summary>Hint: Summing Aggregation</summary>
 
