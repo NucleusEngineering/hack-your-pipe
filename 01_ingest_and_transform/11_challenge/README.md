@@ -48,6 +48,7 @@ terraform apply -var-file terraform.tfvars
 ```
 
 Depending on your environment, you may experience an error due to missing PubSub Service Account. In this case, first destroy your resources:
+
 ```
 terraform destroy
 ```
@@ -60,7 +61,7 @@ gcloud beta services identity create --project $GCP_PROJECT --service pubsub
 
 and recreate resources:
 
-``
+```
 terraform apply -var-file terraform.tfvars
 ```
 
