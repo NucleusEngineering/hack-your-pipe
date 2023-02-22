@@ -10,17 +10,9 @@ A common use case in the machine learning field is anomaly detection.
 In this chapter you are going to train productionize an anomaly detection machine learning model.
 As previously you will look at various sets of requirements and build efficient solutions for each of them.
 
-## Set-up Cloud Environment
+## Set Google Cloud Project
 
-### Initialize your account and project
-
-If you are using the Google Cloud Shell you can skip this step.
-
-```
-gcloud init
-```
-
-### Set Google Cloud Project
+Please make sure to start this challenge in a cleaned up GCP environment. (restart your lab)
 
 Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` as `PUSH_ENDPOINT` & set the environment variables.
 ```
@@ -32,44 +24,26 @@ Set default GCP Project
 gcloud config set project $GCP_PROJECT
 ```
 
-### Enable Google Cloud APIs
-
-```
-gcloud services enable aiplatform.googleapis.com storage.googleapis.com notebooks.googleapis.com dataflow.googleapis.com artifactregistry.googleapis.com 
-```
-
-### Set compute zone
-
+Set compute zone
 ```
 gcloud config set compute/zone $GCP_REGION
 ```
 
-### Create a service account.
+Build pipeline service containers.
 ```
-gcloud iam service-accounts create retailpipeline-hyp \
-    --display-name="retailpipeline-hyp"
-```
-
-### ... with the necessary permissions.
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/storage.objectAdmin"
-
+gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
+gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
 ```
 
-```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/aiplatform.user"
+Set your GCP project id in `./terraform.tfvars`.
 
+Build Ingestion & Transformation Infrastructure via Terraform
+```
+terraform init
 ```
 
 ```
-gcloud projects add-iam-policy-binding $GCP_PROJECT \
-    --member="serviceAccount:retailpipeline-hyp@$GCP_PROJECT.iam.gserviceaccount.com" \
-    --role="roles/automl.serviceAgent"
-
+terraform apply -var-file terraform.tfvars
 ```
 
 <!-- 
@@ -202,10 +176,28 @@ gcloud ai endpoints deploy-model <model-name>
 
 </details>
 
-
 ## Challenge 4: Inference Pipeline
 
 Now that your model is deployed and ready to make predictions you will include it into your Cloud Run processing pipeline.
+
+First create a BigQuery table named `bq_table_run_anomaly` and the schema `tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL` as prediction destination.
+
+<details><summary>Hint</summary>
+
+[bq mk documentation](https://cloud.google.com/bigquery/docs/reference/bq-cli-reference#bq_mk)
+
+</details>
+
+
+<details><summary>Suggested Solution</summary>
+To create the BigQuery destination table run.
+
+```
+bq mk --location=europe-west1 --table $GCP_PROJECT:ecommerce_sink.bq_table_run_anomaly tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL
+```
+
+</details>
+
 
 `21_challenge/inf_processing_service.py` is the template for your adapted inference processing container.
 However, the file is missing some code snippets.

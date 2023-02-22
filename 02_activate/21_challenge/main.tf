@@ -92,6 +92,18 @@ resource "google_project_iam_member" "dataflow_storage_object_admin" {
   member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
 }
 
+resource "google_project_iam_member" "dataflow_storage_object_admin" {
+  project = var.project_id
+  role = "roles/automl.serviceAgent"
+  member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
+}
+
+resource "google_project_iam_member" "dataflow_storage_object_admin" {
+  project = var.project_id
+  role = "roles/aiplatform.user"
+  member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
+}
+
 data "google_compute_default_service_account" "default" {
 }
 
@@ -105,24 +117,41 @@ resource "google_project_iam_member" "gce_pub_sub_admin" {
 # Enabling APIs
 resource "google_project_service" "compute" {
   service = "compute.googleapis.com"
-
   disable_on_destroy = false
 }
 
 resource "google_project_service" "run" {
   service = "run.googleapis.com"
-
   disable_on_destroy = false
 }
 
 resource "google_project_service" "dataflow" {
   service = "dataflow.googleapis.com"
-
   disable_on_destroy = false
 }
 
 resource "google_project_service" "pubsub" {
   service = "pubsub.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "pubsub" {
+  service = "aiplatform.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "pubsub" {
+  service = "storage.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "pubsub" {
+  service = "notebooks.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "pubsub" {
+  service = "artifactregistry.googleapis.com"
   disable_on_destroy = false
 }
 
@@ -196,82 +225,41 @@ resource "google_pubsub_topic" "ps_topic" {
 
 
 # Pipeline 1: Cloud Run Proxy -> Pub/Sub -> Dataflow -> BigQuery
-resource "google_pubsub_subscription" "hyp_sub_dataflow" {
-  name  = "hyp_subscription_dataflow"
-  topic = google_pubsub_topic.ps_topic.name
+# resource "google_pubsub_subscription" "hyp_sub_dataflow" {
+#   name  = "hyp_subscription_dataflow"
+#   topic = google_pubsub_topic.ps_topic.name
 
-  labels = {
-    created = "terraform"
-  }
-  
-  retain_acked_messages      = false
-
-  ack_deadline_seconds = 20
-
-
-  retry_policy {
-    minimum_backoff = "10s"
-  }
-
-  enable_message_ordering    = false
-}
-
-# resource "google_bigquery_table" "bq_table_dataflow" {
-#   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
-#   table_id   = "dataflow"
-#   deletion_protection = false
-# 
-#   time_partitioning {
-#     type = "DAY"
-#     field = "event_datetime"
-#   }
-# 
 #   labels = {
-#     env = "default"
+#     created = "terraform"
 #   }
-# 
-#   schema = file("./datalayer/ecommerce_events_bq_schema.json")
-# 
+  
+#   retain_acked_messages      = false
+
+#   ack_deadline_seconds = 20
+
+
+#   retry_policy {
+#     minimum_backoff = "10s"
+#   }
+
+#   enable_message_ordering    = false
 # }
 
-# resource "google_storage_bucket" "dataflow_gcs_bucket" {
-#     name = "${var.project_id}-ecommerce-events"
-#     location = var.gcp_region
-#     force_destroy = true
-# }
-
-resource "google_dataflow_flex_template_job" "dataflow_stream" {
-  provider                = google-beta
-  name                    = "ecommerce-events-ps-to-bq-stream"
-  container_spec_gcs_path = "gs://${var.project_id}-ecommerce-events/df_templates/dataflow_template.json"
-  region = var.gcp_region
-  project = var.project_id
-  depends_on = [google_project_service.compute, google_project_service.dataflow]
-  parameters = {
-    "on_delete" = "cancel"
-    "service_account_email" = "${google_service_account.data_pipeline_access.email}"
-    "network" = "${google_compute_network.vpc_network.name}"
-    "max_workers" = 1
-    "temp_location" = "gs://${var.project_id}-ecommerce-events/df_tmp_dir"
-    "runner" = "DataflowRunner"
-  }
-}
-
-# resource "google_dataflow_job" "dataflow_stream" {
-#     name = "ecommerce-events-ps-to-bq-stream"
-#     template_gcs_path = "gs://${var.project_id}-ecommerce-events/df_templates/dataflow_template.json"
-#     temp_gcs_location = "gs://${var.project_id}-ecommerce-events/df_tmp_dir"
-
-#     transform_name_mapping = {
-#         name = "test_job"
-#         env = "dev"
-#     }
-
-#     on_delete = "cancel"
-#     service_account_email = "${google_service_account.data_pipeline_access.email}"
-#     network = "${google_compute_network.vpc_network.name}"
-#     depends_on = [google_project_service.compute, google_project_service.dataflow]
-#     max_workers = 1
+# resource "google_dataflow_flex_template_job" "dataflow_stream" {
+#   provider                = google-beta
+#   name                    = "ecommerce-events-ps-to-bq-stream"
+#   container_spec_gcs_path = "gs://${var.project_id}-ecommerce-events/df_templates/dataflow_template.json"
+#   region = var.gcp_region
+#   project = var.project_id
+#   depends_on = [google_project_service.compute, google_project_service.dataflow]
+#   parameters = {
+#     "on_delete" = "cancel"
+#     "service_account_email" = "${google_service_account.data_pipeline_access.email}"
+#     "network" = "${google_compute_network.vpc_network.name}"
+#     "max_workers" = 1
+#     "temp_location" = "gs://${var.project_id}-ecommerce-events/df_tmp_dir"
+#     "runner" = "DataflowRunner"
+#   }
 # }
 
 

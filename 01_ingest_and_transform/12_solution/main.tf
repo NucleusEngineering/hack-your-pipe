@@ -216,30 +216,6 @@ resource "google_pubsub_subscription" "hyp_sub_dataflow" {
   enable_message_ordering    = false
 }
 
-# resource "google_bigquery_table" "bq_table_dataflow" {
-#   dataset_id = google_bigquery_dataset.bq_dataset.dataset_id
-#   table_id   = "dataflow"
-#   deletion_protection = false
-# 
-#   time_partitioning {
-#     type = "DAY"
-#     field = "event_datetime"
-#   }
-# 
-#   labels = {
-#     env = "default"
-#   }
-# 
-#   schema = file("./datalayer/ecommerce_events_bq_schema.json")
-# 
-# }
-
-# resource "google_storage_bucket" "dataflow_gcs_bucket" {
-#     name = "${var.project_id}-ecommerce-events"
-#     location = var.gcp_region
-#     force_destroy = true
-# }
-
 resource "google_dataflow_flex_template_job" "dataflow_stream" {
   provider                = google-beta
   name                    = "ecommerce-events-ps-to-bq-stream"
@@ -256,23 +232,6 @@ resource "google_dataflow_flex_template_job" "dataflow_stream" {
     "runner" = "DataflowRunner"
   }
 }
-
-# resource "google_dataflow_job" "dataflow_stream" {
-#     name = "ecommerce-events-ps-to-bq-stream"
-#     template_gcs_path = "gs://${var.project_id}-ecommerce-events/df_templates/dataflow_template.json"
-#     temp_gcs_location = "gs://${var.project_id}-ecommerce-events/df_tmp_dir"
-
-#     transform_name_mapping = {
-#         name = "test_job"
-#         env = "dev"
-#     }
-
-#     on_delete = "cancel"
-#     service_account_email = "${google_service_account.data_pipeline_access.email}"
-#     network = "${google_compute_network.vpc_network.name}"
-#     depends_on = [google_project_service.compute, google_project_service.dataflow]
-#     max_workers = 1
-# }
 
 
 # Pipeline 2: Cloud Run Proxy -> Pub/Sub -> BigQuery
