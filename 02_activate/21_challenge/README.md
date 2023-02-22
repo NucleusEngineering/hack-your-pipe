@@ -22,8 +22,13 @@ gcloud init
 
 ### Set Google Cloud Project
 
+Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` as `PUSH_ENDPOINT` & set the environment variables.
 ```
-export GCP_PROJECT=<project-id>
+source config_env.sh
+```
+
+Set default GCP Project
+```
 gcloud config set project $GCP_PROJECT
 ```
 
@@ -36,7 +41,6 @@ gcloud services enable aiplatform.googleapis.com storage.googleapis.com notebook
 ### Set compute zone
 
 ```
-export GCP_REGION=europe-west1
 gcloud config set compute/zone $GCP_REGION
 ```
 
@@ -68,6 +72,7 @@ gcloud projects add-iam-policy-binding $GCP_PROJECT \
 
 ```
 
+<!-- 
 ### Organizational Policies
 
 Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
@@ -80,7 +85,7 @@ constraints/compute.vmExternalIpAccess
 constraints/compute.requireShieldedVm
 constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
-```
+``` -->
 
 
 ## Challenge 0: Architecture
@@ -163,9 +168,9 @@ Run the following command to create a model endpoint in Vertex.
 
 ```
 gcloud ai endpoints create
-    --project=<project-id>
-    --region=europe-west1
-    --display-name=<endpoint-name>
+    --project=$GCP_PROJECT
+    --region=$GCP_REGION
+    --display-name=my_hyp_endpoint
 ```
 
 </details>
@@ -190,7 +195,7 @@ To deploy your model run the following command.
 ```
 gcloud ai endpoints deploy-model <model-name>
     --project=<project-id>
-    --region=europe-west1
+    --region=$GCP_REGION
     --model=<model-id (numeric)>
     --display-name=<model-display-name (string)>
 ```
@@ -248,14 +253,6 @@ errors_an = client.insert_rows_json(table_id, rows_to_insert)  # Make an API req
 ```
 
 Build Container
-
-```
-export RUN_INFERENCE_PROCESSING_SERVICE=inf_processing_service
-export GCP_PROJECT=<project-id>
-```
-
-
-
 ```
 gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT/inference-processing-service
 ```
