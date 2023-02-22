@@ -42,6 +42,11 @@ gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processi
 
 Set your GCP project id in `./terraform.tfvars`.
 
+Create the PubSub Service Account. 
+```
+gcloud beta services identity create --project $GCP_PROJECT --service pubsub
+```
+
 Build Ingestion & Transformation Infrastructure via Terraform
 ```
 terraform init
