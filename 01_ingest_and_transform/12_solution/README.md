@@ -102,8 +102,13 @@ gcloud init
 
 ### Set Google Cloud Project
 
+Enter your GCP Project ID in `./config_env.sh` & set all necessary environment variables.
 ```
-export GCP_PROJECT=<project-id>
+source config_env.sh
+```
+
+Set the default GCP project.
+```
 gcloud config set project $GCP_PROJECT
 ```
 
@@ -116,11 +121,10 @@ gcloud services enable compute.googleapis.com cloudbuild.googleapis.com artifact
 ### Set compute region
 
 ```
-export GCP_REGION=europe-west1
 gcloud config set compute/zone $GCP_REGION
 ```
 
-### Organizational Policies
+<!-- ### Organizational Policies
 
 Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
@@ -132,7 +136,7 @@ constraints/compute.vmExternalIpAccess
 constraints/compute.requireShieldedVm
 constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
-```
+``` -->
 
 # Build the Cloud Run Containers
 
@@ -148,24 +152,18 @@ cat processing_service/config.py
 ## Pub/Sub proxy service container
 
 ```
-export RUN_PROXY_DIR=cloud-run-pubsub-proxy
-
 gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
 ```
 
 ## Data Processing service container
 
 ```
-export RUN_PROCESSING_DIR=processing-service
-
 gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
 ```
 
 ## Dataflow Template container
 
 ```
-export DATAFLOW_TEMPLATE=beam
-
 gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processing-flex-template
 ```
 
@@ -283,8 +281,9 @@ Use the `cloud_run_proxy_url` value from the Terraform output to simulate sendin
 
 #### Set Cloud Run Proxy URL
 
+Enter your the proxy service URL as `ENDPOINT_URL` in `./config_env.sh` & reset the environment variables.
 ```
-export ENDPOINT_URL=https://pubsub-proxy-my-service-<id>-uc.a.run.app
+source config_env.sh
 ```
 
 #### Create artificial event stream
