@@ -56,7 +56,7 @@ terraform apply -var-file terraform.tfvars
 ```
 
 
-### Organizational Policies
+<!-- ### Organizational Policies
 
 Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
@@ -68,7 +68,7 @@ constraints/compute.vmExternalIpAccess
 constraints/compute.requireShieldedVm
 constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
-```
+``` -->
 
 
 ## Challenge 0:
