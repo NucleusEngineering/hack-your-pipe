@@ -146,9 +146,9 @@ Check the docs how to create a model endpoint through the [Console](https://clou
 Run the following command to create a model endpoint in Vertex.
 
 ```
-gcloud ai endpoints create
-    --project=$GCP_PROJECT
-    --region=$GCP_REGION
+gcloud ai endpoints create \
+    --project=$GCP_PROJECT \
+    --region=$GCP_REGION \
     --display-name=my_hyp_endpoint
 ```
 
@@ -172,10 +172,10 @@ Check the docs how to create a model endpoint through the [Console](https://clou
 To deploy your model run the following command. 
 
 ```
-gcloud ai endpoints deploy-model <model-name>
-    --project=<project-id>
-    --region=$GCP_REGION
-    --model=<model-id (numeric)>
+gcloud ai endpoints deploy-model endpoint_id \
+    --project=$GCP_PROJECT \
+    --region=$GCP_REGION \
+    --model=anomaly_detection \
     --display-name=<model-display-name (string)>
 ```
 
