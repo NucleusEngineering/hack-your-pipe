@@ -92,13 +92,13 @@ resource "google_project_iam_member" "dataflow_storage_object_admin" {
   member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
 }
 
-resource "google_project_iam_member" "dataflow_storage_object_admin" {
+resource "google_project_iam_member" "service_agent_role" {
   project = var.project_id
   role = "roles/automl.serviceAgent"
   member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
 }
 
-resource "google_project_iam_member" "dataflow_storage_object_admin" {
+resource "google_project_iam_member" "aiplatform_user_role" {
   project = var.project_id
   role = "roles/aiplatform.user"
   member = "serviceAccount:${google_service_account.data_pipeline_access.email}"
@@ -135,22 +135,22 @@ resource "google_project_service" "pubsub" {
   disable_on_destroy = false
 }
 
-resource "google_project_service" "pubsub" {
+resource "google_project_service" "aiplatform" {
   service = "aiplatform.googleapis.com"
   disable_on_destroy = false
 }
 
-resource "google_project_service" "pubsub" {
+resource "google_project_service" "storage" {
   service = "storage.googleapis.com"
   disable_on_destroy = false
 }
 
-resource "google_project_service" "pubsub" {
+resource "google_project_service" "notebooks" {
   service = "notebooks.googleapis.com"
   disable_on_destroy = false
 }
 
-resource "google_project_service" "pubsub" {
+resource "google_project_service" "artifactregistry" {
   service = "artifactregistry.googleapis.com"
   disable_on_destroy = false
 }
