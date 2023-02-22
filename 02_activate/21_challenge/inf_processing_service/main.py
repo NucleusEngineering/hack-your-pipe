@@ -67,17 +67,11 @@ def index():
             "value":record["ecommerce"]["purchase"]["value"]}
             ]
 
-        aiplatform.init(project=config.project_id, location=config.location)
+        # <ai platform sdk initialization>
 
-        endpoint = aiplatform.Endpoint(
-            endpoint_name=f"projects/{config.project_id}/locations/{config.location}/endpoints/{config.endpoind_id}",
-            project = config.project_id,
-            location=config.location,
-            )
+        # < vertex endpoint definition >
 
-        endpoint_response = endpoint.predict(
-            instances=record_to_predict
-        )
+        # < calling prediction from endpoint >
 
         centroid = endpoint_response.predictions[0]["nearest_centroid_id"][0]
 
@@ -92,11 +86,9 @@ def index():
 
         rows_to_insert = [anomaly_record]
 
-        client = bigquery.Client(project=config.project_id, location=config.location)
-        table_id = config.project_id + '.' + config.bq_dataset + '.' + config.bq_table_anomaly
-
-        errors_an = client.insert_rows_json(table_id, rows_to_insert)  # Make an API request.
-
+        # < defining Big Query client >
+        # < setting table id >
+        # < api request to insert rows in BigQuery destination table >
 
         if errors_an == []:
             print(f"{time.time()} New rows with prediction have been added.")
