@@ -179,11 +179,11 @@ Check the docs how to create a model endpoint through the [Console](https://clou
 To deploy your model run the following command. 
 
 ```
-gcloud ai endpoints deploy-model endpoint_id \
+gcloud ai endpoints deploy-model <endpoint-id> \
     --project=$GCP_PROJECT \
     --region=$GCP_REGION \
     --model=anomaly_detection \
-    --display-name=<model-display-name (string)>
+    --display-name=anomaly_detection
 ```
 
 </details>
