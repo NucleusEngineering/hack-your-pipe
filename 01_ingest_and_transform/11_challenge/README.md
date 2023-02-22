@@ -14,15 +14,17 @@ As Data Engineer you want to set up a solution to collect and analyze user inter
 
 Before you jump into the challenges make sure you GCP project is prepared by: 
 
-... setting your Google Cloud Project.
+... entering your GCP Project ID in `./config_env.sh`.
+
+... setting all necessary environment variables.
+
 ```
-export GCP_PROJECT=<project-id>
-gcloud config set project $GCP_PROJECT
+source config_env.sh
 ```
 
 ... setting your compute zone.
 ```
-gcloud config set compute/zone europe-west1
+gcloud config set compute/zone $GCP_REGION
 ```
 
 ... cloning the github repo
@@ -37,6 +39,12 @@ cd hack-your-pipe/01_ingest_and_transform/11_challenge
 
 ... changing the project id in `./terraform.tfvars` to your own project id
 
+... creating the PubSub Service Account. 
+
+```
+gcloud beta services identity create --project $GCP_PROJECT --service pubsub
+```
+
 ... building the basic permissions & networking setup via terraform apply.
 
 ```
@@ -47,23 +55,6 @@ terraform init
 terraform apply -var-file terraform.tfvars
 ```
 
-Depending on your environment, you may experience an error due to missing PubSub Service Account. In this case, first destroy your resources:
-
-```
-terraform destroy
-```
-
-Then manually create the PubSub Service Accounts using: 
-
-```
-gcloud beta services identity create --project $GCP_PROJECT --service pubsub
-```
-
-and recreate resources:
-
-```
-terraform apply -var-file terraform.tfvars
-```
 
 ### Organizational Policies
 
