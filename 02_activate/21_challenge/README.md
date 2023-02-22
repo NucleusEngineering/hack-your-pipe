@@ -198,7 +198,7 @@ First create a BigQuery table named `bq_table_run_anomaly` and the schema `tax:F
 To create the BigQuery destination table run.
 
 ```
-bq mk --location=europe-west1 --table $GCP_PROJECT:ecommerce_sink.bq_table_run_anomaly tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL
+bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.bq_table_run_anomaly tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
 ```
 
 </details>
