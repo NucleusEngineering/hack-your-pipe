@@ -13,6 +13,7 @@ The architecture you are going to implement will look something like this:
 ![Hack Your Pipe architecture](../../rsc/hyp_ml_architecture.png)
 
 
+
 ## Prerequisites: Create Synthetic Data
 
 You will use the click stream data from the [ingest and transform section](https://github.com/NucleusEngineering/hack-your-pipe/tree/main/01_ingest_and_transform) as an example.
@@ -40,9 +41,12 @@ gcloud init
 ```
 
 ### Set Google Cloud Project
+Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` as `PUSH_ENDPOINT` & set the environment variables.
+```
+source config_env.sh
+```
 
 ```
-export GCP_PROJECT=<project-id>
 gcloud config set project $GCP_PROJECT
 ```
 
@@ -55,7 +59,6 @@ gcloud services enable aiplatform.googleapis.com storage.googleapis.com notebook
 ### Set compute zone
 
 ```
-export GCP_REGION=europe-west1
 gcloud config set compute/zone $GCP_REGION
 ```
 
@@ -89,7 +92,7 @@ gcloud projects add-iam-policy-binding $GCP_PROJECT \
 
 ```
 
-### Organizational Policies
+<!-- ### Organizational Policies
 
 Depending on the setup within your organization you might have to [overwrite some organizational policies](https://cloud.google.com/resource-manager/docs/organization-policy/creating-managing-policies#boolean_constraints) for the examples to run.
 
@@ -101,7 +104,7 @@ constraints/compute.vmExternalIpAccess
 constraints/compute.requireShieldedVm
 constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
-```
+``` -->
 
 ## Run ML Pipeline
 
@@ -148,12 +151,6 @@ terraform apply -var-file terraform.tfvars
 
 To include real time inference in your pipeline you have to update the Cloud Run processing service.
 That means you need build and deploy a new container version to your service.
-
-Set environment variables.
-
-```
-export RUN_INFERENCE_PROCESSING_SERVICE=inf_processing_service
-```
 
 Build the new container.
 
