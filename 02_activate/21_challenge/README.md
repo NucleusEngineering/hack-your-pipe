@@ -255,7 +255,7 @@ gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT
 ```
 
 ```
-gcloud run deploy hyp-run-service-data-processing --image=gcr.io/<project-id>/inference-processing-service:latest --region=europe-west1
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=europe-west1
 ```
 
 
