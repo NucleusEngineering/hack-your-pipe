@@ -228,6 +228,8 @@ Check the docs for
 
 <details><summary>Suggested Solution</summary>
 
+Adjust the project-id in `./inf_processing_service/config.py`.
+
 AI Platform SDK initialization
 ```
 aiplatform.init(project=config.project_id, location=config.location)
