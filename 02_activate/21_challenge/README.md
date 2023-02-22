@@ -228,7 +228,9 @@ Check the docs for
 
 <details><summary>Suggested Solution</summary>
 
-Adjust the project-id in `./inf_processing_service/config.py`.
+Adjust the project-id and endpoint_id in `./inf_processing_service/config.py`.
+
+You can find the correct endpoint id on the Vertex AI page under Endpoints.
 
 AI Platform SDK initialization
 ```
