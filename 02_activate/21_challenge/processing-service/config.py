@@ -11,9 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os
 
-project_id = os.environ['GCP_PROJECT']
+project_id = '<project-id>'
 location = 'europe-west1'
 bq_dataset = 'ecommerce_sink'
 bq_table = 'cloud_run'
