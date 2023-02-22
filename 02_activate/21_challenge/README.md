@@ -34,6 +34,8 @@ Set compute zone
 gcloud config set compute/zone $GCP_REGION
 ```
 
+Set your GCP project id in `./processing_service/config.py`.
+
 Build pipeline service containers.
 ```
 gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
@@ -41,6 +43,11 @@ gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processi
 ```
 
 Set your GCP project id in `./terraform.tfvars`.
+
+Create the PubSub Service Account. 
+```
+gcloud beta services identity create --project $GCP_PROJECT --service pubsub
+```
 
 Build Ingestion & Transformation Infrastructure via Terraform
 ```
