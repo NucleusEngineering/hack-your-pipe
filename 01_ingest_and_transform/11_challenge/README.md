@@ -47,12 +47,23 @@ terraform init
 terraform apply -var-file terraform.tfvars
 ```
 
-Depending on your environment your might need to manually create the PubSub Service Accounts using: 
+Depending on your environment, you may experience an error due to missing PubSub Service Account. In this case, first destroy your resources:
+
+```
+terraform destroy
+```
+
+Then manually create the PubSub Service Accounts using: 
 
 ```
 gcloud beta services identity create --project $GCP_PROJECT --service pubsub
 ```
 
+and recreate resources:
+
+```
+terraform apply -var-file terraform.tfvars
+```
 
 ### Organizational Policies
 
@@ -603,7 +614,7 @@ There should be an aggregation per 10 items purchased per user.
 
 The aggregated values should be written into your BigQuery table.
 
-Before you start coding replace the required variables in `config.py` so you can access them safely in `main.py`.
+Before you start coding replace the required variables in `config.py` so you can access them safely in `beam_processing.py`.
 
 <details><summary>Hint: Summing Aggregation</summary>
 
