@@ -14,6 +14,11 @@ As previously you will look at various sets of requirements and build efficient 
 
 Please make sure to start this challenge in a cleaned up GCP environment. (restart your lab)
 
+Clone the github repo.
+```
+git clone https://github.com/NucleusEngineering/hack-your-pipe.git
+```
+
 Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` as `PUSH_ENDPOINT` & set the environment variables.
 ```
 source config_env.sh
