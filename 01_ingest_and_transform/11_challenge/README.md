@@ -14,9 +14,7 @@ As Data Engineer you want to set up a solution to collect and analyze user inter
 
 Before you jump into the challenges make sure you GCP project is prepared by: 
 
-... entering your GCP Project ID in `./config_env.sh`.
-
-... setting all necessary environment variables.
+... entering your GCP Project ID in `./config_env.sh` & setting all necessary environment variables.
 
 ```
 source config_env.sh
@@ -129,8 +127,6 @@ You can use the [gcloud builds submit](https://cloud.google.com/sdk/gcloud/refer
 <details><summary>Suggested Solution</summary>
 
 ```
-export RUN_PROXY_DIR=cloud-run-pubsub-proxy
-
 gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
 ```
 
@@ -172,10 +168,10 @@ To deploy a new Cloud Run service from your container you can use:
 gcloud run deploy hyp-run-service-pubsub-proxy --image gcr.io/$GCP_PROJECT/pubsub-proxy:latest --region=europe-west1 --allow-unauthenticated
 ```
 
-To save the service endpoint URL in the environment variable `$ENDPOINT_URL` run: 
+Enter the displayed URL of your endpoint in `./config_env.sh` & reset the environment variables.
 
 ```
-export ENDPOINT_URL=https://pubsub-proxy-my-service-<id>-uc.a.run.app
+source config_env.sh
 ```
 
 </details>
@@ -421,8 +417,6 @@ cd ..
 ```
 
 ```
-export PROCESSING_SERVICE_DIR=processing-service
-
 gcloud builds submit $PROCESSING_SERVICE_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
 ```
 
@@ -476,9 +470,11 @@ Read about [types of subscriptions](https://cloud.google.com/pubsub/docs/subscri
 
 You will need to create a Push Subscription to the Pub/Sub topic we already defined.
 
-Set processing endpoint env var:
+
+Enter the displayed URL of your processing in `./config_env.sh` as `PUSH_ENDPOINT` & reset the environment variables.
+
 ```
-export PUSH_ENDPOINT=<processing endpoint service url>
+source config_env.sh
 ```
 
 Create PubSub push subscription: 
@@ -691,10 +687,7 @@ cd ..
 ```
 
 Run
-
 ```
-export DATAFLOW_TEMPLATE=beam
-
 gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processing-flex-template
 ```
 
