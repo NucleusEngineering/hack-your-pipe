@@ -29,7 +29,7 @@ Set compute zone
 gcloud config set compute/zone $GCP_REGION
 ```
 
-Update the default project ID in [processing_service/config.py](https://github.com/NucleusEngineering/hack-your-pipe/blob/main/02_ingest_and_transform/21_challenge/processing-service/config.py)
+Update the default project ID in `./processing_service/config.py`.
 
 Build pipeline service containers.
 ```
