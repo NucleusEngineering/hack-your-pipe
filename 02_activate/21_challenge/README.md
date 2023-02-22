@@ -211,10 +211,10 @@ bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.bq_table_run_anomal
 </details>
 
 
-`21_challenge/inf_processing_service.py` is the template for your adapted inference processing container.
+`21_challenge/inf_processing_service` is the template for your adapted inference processing container.
 However, the file is missing some code snippets.
 
-Finish coding up the inference processing service.
+Finish coding up the inference processing service. Don't forget to adjust the configuration.
 
 <details><summary>Hint</summary>
 
@@ -262,63 +262,300 @@ gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT
 ```
 
 ```
-gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=europe-west1
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=$GCP_REGION
 ```
-
 
 </details>
 
 
 ## Challenge 5: Custom Model Training
 
-Train custom model
+### 5.1. Preparation
+
+Let's imagine that once you find a sufficient anomaly detection split with K-Means clustering, you'd like to build a custom [classification model](https://developers.google.com/machine-learning/glossary#binary-classification) on your now labeled historical dataset, so that you can start classifying anomalies arising in the new data coming in. 
+Your explanatory variables will be `tax`, `shipping` and `value` and you will try to predict if the anomaly is `true` or `false`.
+
+For this exercise, save your labelled historical data as a table called `anomaly_data` in BigQuery, resembling the table you created in Challenge 4 to capture data.
 
 <details><summary>Hint</summary>
 
-Hint
+Here's an [example](https://cloud.google.com/bigquery-ml/docs/linear-regression-tutorial#step_five_use_your_model_to_predict_outcomes).
+
+```
+CREATE TABLE
+    ecommerce_sink.anomaly_data AS (
+SELECT
+    ("<substitute with query that takes TRUE value when the CENTROID_ID = 1, FALSE otherwise>") AS anomaly,
+    tax,
+    shipping,
+    value
+FROM
+    ML.PREDICT(MODEL <full path model_id>,
+    (
+    SELECT
+        ecommerce.purchase.tax AS tax,
+        ecommerce.purchase.shipping AS shipping,
+        ecommerce.purchase.value AS value
+    FROM
+        `<project_id>.ecommerce_sink.cloud_run`
+    WHERE
+        event='purchase') ) )
+;
+```
 
 </details>
 
 <details><summary>Suggested Solution</summary>
 
-Solution
-
+```
+CREATE TABLE
+    ecommerce_sink.anomaly_data AS (
+SELECT
+    (CASE
+        WHEN CENTROID_ID = 1 THEN TRUE
+    ELSE
+    FALSE
+    END
+    ) AS anomaly,
+    tax,
+    shipping,
+    value
+FROM
+    ML.PREDICT(MODEL `<project_id>.ecommerce_sink.anomaly_detection`,
+    (
+    SELECT
+        ecommerce.purchase.tax AS tax,
+        ecommerce.purchase.shipping AS shipping,
+        ecommerce.purchase.value AS value
+    FROM
+        `<project_id>.ecommerce_sink.cloud_run`
+    WHERE
+        event='purchase') ) )
+;
+```
 </details>
 
+You will use this data to train a custom classifier model that will allow you to find anomalies in incoming new data points. 
 
-## Challenge 6: Custom Model Deployment
-
-Deploy custom model
+Create a bucket called `$GCP_PROJECT-ai-bucket` for custom training artifacts that Vertex aI will store later.
 
 <details><summary>Hint</summary>
 
-Hint
+[CLI-link](https://cloud.google.com/storage/docs/gsutil/commands/mb)
 
 </details>
 
 <details><summary>Suggested Solution</summary>
 
-Solution
+```
+gsutil mb -l $GCP_REGION gs://$GCP_PROJECT-ai-bucket
+```
 
 </details>
 
+### 5.2. Creating custom training and prediction containers
 
-## Challenge 5: Custom Model Inference
+We start by preparing the code to create custom training and prediction containers.
+Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
+Inspect the provided code in in the `custom_train` folder.
 
-Connect custom model inference to dataflow pipeline
+You will need to complete the code by filling in the missing snippets (3 altogether, 2 in training, 1 in prediction) in the `custom_train/trainer/train.py`, `custom_train/trainer/main.py` and `custom_train/prediction/main.py` files.
+
+<details><summary>Hint 1 - Custom training</summary>
+
+Use the [scikit-learn documentation](https://scikit-learn.org/stable/modules/tree.html#classification).
+
+</details>
+
+<details><summary>Suggested Solution 1 - Custom training</summary>
+
+```
+# Define and train the Scikit model
+skmodel = DecisionTreeClassifier()
+skmodel.fit(data, labels)
+```
+
+</details>
+
+<details><summary>Hint 2 - Custom training</summary>
+
+Find the model training function in the `custom_train/trainer/train.py` file and call it with the arguments.
+
+</details>
+
+<details><summary>Suggested Solution 2 - Custom training</summary>
+
+```
+train.train_model(train_data, train_labels, test_data, test_labels, storage_client)
+```
+
+</details>
+
+</details>
+
+<details><summary>Hint 3 - Custom prediction</summary>
+
+Use the [scikit-learn documentation](https://scikit-learn.org/stable/modules/tree.html#classification).
+
+</details>
+
+<details><summary>Suggested Solution 3 - Custom prediction</summary>
+
+```
+outputs = model.predict(instances)
+```
+
+</details>
+
+Build the custom train and prediction container images.
 
 <details><summary>Hint</summary>
 
-Hint
+You can use the [gcloud builds submit](https://cloud.google.com/sdk/gcloud/reference/builds/submit) command.
 
 </details>
 
 <details><summary>Suggested Solution</summary>
 
-Solution
+```
+gcloud builds submit custom_train/trainer/. --tag $TRAIN_IMAGE_URI
+```
+```
+gcloud builds submit  custom_train/prediction/. --tag $PREDICT_IMAGE_URI 
+```
 
 </details>
 
+### 5.3. Creating the pipeline
+
+Now, you will create a [training pipeline](https://cloud.google.com/vertex-ai/docs/training/create-training-pipeline) in Vertex AI, using code and the containers you created.
+The files `kf_pipe_custom.py` and `config_custom.py` are prepared for you with 4 snippets to fix.
+
+Running this pipeline will run the sequence of Model training (custom) > Import custom prediction container > Upload the model into the model registry > Creating an endpoint > Deploying the model on the endpoint.
+
+<details><summary>Hint 1</summary>
+
+Look into the [job component](https://cloud.google.com/vertex-ai/docs/pipelines/customjob-component#customjobop) that gives full functionalities.
+
+</details>
+
+<details><summary>Suggested Solution 1</summary>
+
+```
+train_job = CustomTrainingJobOp(
+            display_name="pipeline-anomaly-custom-train",
+            project=project_id,
+            location=region,
+            worker_pool_specs=WORKER_POOL_SPECS
+        )
+```
+
+</details>
+
+<details><summary>Hints 2 - 4</summary>
+
+Find the relevant operators in the [documentation](https://cloud.google.com/vertex-ai/docs/pipelines/model-endpoint-component).
+
+</details>
+
+<details><summary>Suggested Solution 2</summary>
+
+```
+custom_model_upload_job = gcc_aip.ModelUploadOp(
+            project=project_id,
+            location=region,
+            display_name=f"anomaly-detection-custom-model_{timestamp_id}",
+            unmanaged_container_model=import_unmanaged_model_op.outputs["artifact"],
+            ).after(import_unmanaged_model_op)
+```
+
+</details>
+
+<details><summary>Suggested Solution 3</summary>
+
+```
+# Create an endpoint where the model will be deployed
+        endpoint_create_job = gcc_aip.EndpointCreateOp(
+            project=project_id,
+            display_name="anomaly-detection-custom-endpoint",
+            location=region
+        )
+```
+
+</details>
+
+<details><summary>Suggested Solution 4</summary>
+
+```
+# Deploy the model on the endpoint
+        _ = gcc_aip.ModelDeployOp(
+            model=custom_model_upload_job.outputs["model"],
+            endpoint=endpoint_create_job.outputs["endpoint"],
+            deployed_model_display_name="anomaly-detection-custom-deploy",
+            dedicated_resources_min_replica_count=1,
+            dedicated_resources_max_replica_count=1,
+            dedicated_resources_machine_type="n1-standard-2",
+            traffic_split={"0": 100}
+        )
+```
+
+</details>
+
+Once you finished the code, run it:
+
+```
+python3 kf_pipe_custom.py
+```
+
+It can take up to 15-20 minutes for the pipeline to compile and start running.
+
+You can monitor your pipeline on the link you receive in the terminal after running the pipeline code.
 
 
-<!-- TODO: Cloud Run model endpoint -->
+## Challenge 6: Custom Model Inference
+
+Create a new BigQuery destination table, as you did earlier, but this time let's call it `bq_table_run_anomaly_custom`.
+
+```
+bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.bq_table_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
+```
+
+Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`).
+
+<details><summary>Hint</summary>
+
+Find the endpoint id of your custom model, and fill it in `inf_processing_service_custom/config.py` together with your project id.
+Then build the container and deploy it on Cloud Run.
+
+</details>
+
+<details><summary>Suggested Solution</summary>
+
+Find the endpoint id of your custom model
+
+```
+gcloud ai endpoints list
+```
+
+Build the container, and deploy on Cloud Run 
+
+```
+gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE_CUSTOM --tag gcr.io/$GCP_PROJECT/inference-processing-service-custom
+```
+
+```
+gcloud run deploy hyp-run-service-data-processing-custom --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION
+```
+
+</details>
+
+## Challenge 7: Testing the inference pipelines
+
+Now that both models are deployed and connected into the respective inference pipelines, run the streaming data simulation again, and check your destination tables in BigQuery, to see if you are receiving data with the anomaly classifications.
+```
+cd hack-your-pipe/01_ingest_and_transform/11_challenge/
+```
+
+```
+python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
+```
