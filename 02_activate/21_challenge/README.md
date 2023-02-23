@@ -548,7 +548,7 @@ gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE_CUSTOM --tag gcr.io/$GCP_
 ```
 
 ```
-gcloud run deploy hyp-run-service-data-processing-custom --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION
+gcloud run deploy hyp-run-service-data-processing-custom --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION --allow-unauthenticated
 ```
 
 </details>
