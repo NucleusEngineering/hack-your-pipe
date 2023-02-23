@@ -150,18 +150,16 @@ terraform apply -var-file terraform.tfvars
 
 
 To include real time inference in your pipeline you have to update the Cloud Run processing service.
-That means you need build and deploy a new container version to your service. Don't forget to update the `inf_processing_service/config.py`.
+That means you need build and deploy a new container version to your service. Don't forget to update the `inf_processing_service_custom/config.py`.
 
-Build the new container.
-
-```
-gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT/inference-processing-service
-```
-
-Deploy the new container to your Cloud Run service.
+Build the container, and deploy on Cloud Run (note that you are just replacing the container image of the previous inference service to this new inference service).
 
 ```
-gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=europe-west1
+gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE_CUSTOM --tag gcr.io/$GCP_PROJECT/inference-processing-service-custom
+```
+
+```
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION --allow-unauthenticated
 ```
 
 ## Run Kubeflow Pipeline in Vertex (Custom Container)
