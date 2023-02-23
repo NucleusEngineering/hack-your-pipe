@@ -106,6 +106,18 @@ constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
 ``` -->
 
+### Adjusting all the configs in  - important!
+
+Set your GCP project id in the following files in `hack-your-pipe/02_activate/22_solution/`
+
+* `processing_service/config.py`
+* `inf_processing_service_custom/config.py`
+* `inf_processing_service/config.py`
+* `custom_train/trainer/config.py` 
+* `custom_train/prediction/config.py`
+* `config.py`
+
+
 ## Run ML Pipeline
 
 ### Set pipeline config options
@@ -166,8 +178,6 @@ gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/in
 
 Two additional steps are needed to run the pipeline with custom training and prediction. We start by preparing the code to create custom training and prediction containers.
 Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
-
-Make sure you update the config files in the `custom_train/trainer` and `custom_train/prediction` folders, and the file, `config_custom.py`.
 
 Build the containers
 

@@ -18,6 +18,9 @@ Clone the github repo.
 ```
 git clone https://github.com/NucleusEngineering/hack-your-pipe.git
 ```
+```
+cd hack-your-pipe/02_activate/21_challenge/
+```
 
 Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` & set the environment variables.
 ```
@@ -34,9 +37,19 @@ Set compute zone
 gcloud config set compute/zone $GCP_REGION
 ```
 
-Set your GCP project id in `./processing_service/config.py`.
+### Adjusting all the configs in  - important!
 
+Set your GCP project id in the following files in `hack-your-pipe/02_activate/22_solution/`
+
+* `processing_service/config.py`
+* `inf_processing_service_custom/config.py`
+* `inf_processing_service/config.py`
+* `custom_train/trainer/config.py` 
+* `custom_train/prediction/config.py`
+
+### Prepare the service containers
 Build pipeline service containers.
+
 ```
 gcloud builds submit $RUN_PROXY_DIR --tag gcr.io/$GCP_PROJECT/pubsub-proxy
 gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
@@ -236,7 +249,7 @@ Check the docs for
 
 <details><summary>Suggested Solution</summary>
 
-Adjust the project-id and endpoint_id in `./inf_processing_service/config.py`.
+Adjust the endpoint_id in `./inf_processing_service/config.py`.
 
 You can find the correct endpoint id on the Vertex AI page under Endpoints.
 
@@ -370,8 +383,6 @@ gsutil mb -l $GCP_REGION gs://$GCP_PROJECT-ai-bucket
 We start by preparing the code to create custom training and prediction containers.
 Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
 Inspect the provided code in in the `custom_train` folder.
-
-Start by updating the `project_id` in the `custom_train/trainer/config.py` and `custom_train/prediction/config.py` files.
 
 You will need to complete the code by filling in the missing snippets (3 altogether, 2 in training, 1 in prediction) in the `custom_train/trainer/train.py`, `custom_train/trainer/main.py` and `custom_train/prediction/main.py` files.
 
@@ -538,7 +549,7 @@ Create a new BigQuery destination table, as you did earlier, but this time let's
 bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.cloud_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
 ```
 
-Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`). Find the endpoint id of your custom model, and fill it in `inf_processing_service_custom/config.py` together with your project id.
+Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`). Find the endpoint id of your custom model, and fill it in `inf_processing_service_custom/config.py`.
 
 <details><summary>Hint</summary>
 
