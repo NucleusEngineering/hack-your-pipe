@@ -555,14 +555,14 @@ Find the endpoint id of your custom model
 gcloud ai endpoints list
 ```
 
-Build the container, and deploy on Cloud Run 
+Build the container, and deploy on Cloud Run (note that you are just replacing the container image of the previous inference service to this new inference service).
 
 ```
 gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE_CUSTOM --tag gcr.io/$GCP_PROJECT/inference-processing-service-custom
 ```
 
 ```
-gcloud run deploy hyp-run-service-data-processing-custom --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION --allow-unauthenticated
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION --allow-unauthenticated
 ```
 
 </details>
