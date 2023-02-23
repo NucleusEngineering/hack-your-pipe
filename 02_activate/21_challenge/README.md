@@ -19,7 +19,7 @@ Clone the github repo.
 git clone https://github.com/NucleusEngineering/hack-your-pipe.git
 ```
 
-Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` as `PUSH_ENDPOINT` & set the environment variables.
+Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` & set the environment variables.
 ```
 source config_env.sh
 ```
@@ -556,9 +556,6 @@ gcloud run deploy hyp-run-service-data-processing-custom --image=gcr.io/$GCP_PRO
 ## Challenge 7: Testing the inference pipelines
 
 Now that both models are deployed and connected into the respective inference pipelines, run the streaming data simulation again, and check your destination tables in BigQuery, to see if you are receiving data with the anomaly classifications.
-```
-cd hack-your-pipe/01_ingest_and_transform/11_challenge/
-```
 
 ```
 python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL

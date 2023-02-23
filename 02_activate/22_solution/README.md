@@ -41,7 +41,7 @@ gcloud init
 ```
 
 ### Set Google Cloud Project
-Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` as `PUSH_ENDPOINT` & set the environment variables.
+Enter your GCP Project ID as `GCP_PROJECT` in `./config_env.sh` & set the environment variables.
 ```
 source config_env.sh
 ```

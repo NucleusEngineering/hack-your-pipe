@@ -11,10 +11,18 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-import os 
 
-GCP_PROJECT = os.environ['GCP_PROJECT']
-GCP_REGION = os.environ['GCP_REGION']
-PIPELINE_ROOT_PATH = f"gs://{GCP_PROJECT}-ecommerce-events"
-SERVICE_ACCOUNT=f"retailpipeline-hyp@{GCP_PROJECT}.iam.gserviceaccount.com"
+
+import os
+
+PROJECT_ID = os.environ['GCP_PROJECT']
+REGION = os.environ['GCP_REGION']
+PIPELINE_ROOT_PATH=f'gs://{PROJECT_ID}-ai-bucket/pipeline_root_custom/'
+
+TRAIN_IMAGE_URI=os.environ['TRAIN_IMAGE_URI']
+PREDICT_IMAGE_URI=os.environ['PREDICT_IMAGE_URI']
+AIP_STORAGE_URI=f'gs://{PROJECT_ID}-ai-bucket/vtx-artifacts'
+
+SERVICE_ACCOUNT=f"retailpipeline-hyp@{PROJECT_ID}.iam.gserviceaccount.com"
 MACHINE_TYPE = "n1-standard-4"
+DATA_URI=f"{PROJECT_ID}.ecommerce_sink.anomaly_data"
