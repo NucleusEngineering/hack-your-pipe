@@ -93,7 +93,7 @@ def compile_pipe():
         ).after(train_job)
         
         # Upload the model into the registry
-        custom_model_upload_job = gcc_aip.'<. Find the correct operator>'(
+        custom_model_upload_job = gcc_aip.'<2. Find the correct operator>'(
             project=project_id,
             location=region,
             display_name=f"anomaly-detection-custom-model_{timestamp_id}",
