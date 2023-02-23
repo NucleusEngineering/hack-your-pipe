@@ -14,6 +14,11 @@ As Data Engineer you want to set up a solution to collect and analyze user inter
 
 Before you jump into the challenges make sure you GCP project is prepared by: 
 
+... cloning the github repo
+```
+git clone https://github.com/NucleusEngineering/hack-your-pipe.git
+```
+
 ... entering your GCP Project ID in `./config_env.sh` & setting all necessary environment variables.
 
 ```
@@ -23,11 +28,6 @@ source config_env.sh
 ... setting your compute zone.
 ```
 gcloud config set compute/zone $GCP_REGION
-```
-
-... cloning the github repo
-```
-git clone https://github.com/NucleusEngineering/hack-your-pipe.git
 ```
 
 ... moving to the challenge directory
@@ -417,7 +417,7 @@ cd ..
 ```
 
 ```
-gcloud builds submit $PROCESSING_SERVICE_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
+gcloud builds submit $RUN_PROCESSING_DIR --tag gcr.io/$GCP_PROJECT/data-processing-service
 ```
 
 Validate the successful build with:
