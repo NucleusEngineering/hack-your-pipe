@@ -371,6 +371,8 @@ We start by preparing the code to create custom training and prediction containe
 Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
 Inspect the provided code in in the `custom_train` folder.
 
+Start by updating the `project_id` in the `custom_train/trainer/config.py` and `custom_train/prediction/config.py` files.
+
 You will need to complete the code by filling in the missing snippets (3 altogether, 2 in training, 1 in prediction) in the `custom_train/trainer/train.py`, `custom_train/trainer/main.py` and `custom_train/prediction/main.py` files.
 
 <details><summary>Hint 1 - Custom training</summary>
