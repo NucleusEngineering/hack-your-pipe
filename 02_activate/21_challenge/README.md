@@ -513,7 +513,11 @@ custom_model_upload_job = gcc_aip.ModelUploadOp(
 
 </details>
 
-Once you finished the code, run it:
+Once you finished the code, install the dependencies, then run it:
+
+```
+pip install -r ./requirements.txt
+```
 
 ```
 python3 kf_pipe_custom.py
