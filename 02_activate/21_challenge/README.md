@@ -74,6 +74,14 @@ constraints/iam.allowedPolicyMemberDomains
 ``` -->
 
 
+### Make some data for the ML models
+
+Update the `ENDPOINT_URL` with the pubsub-proxy Cloud Run endpoint in the `config_env.sh` and run `source config_env.sh` again. Then run the simulation for minimum 5 minutes.
+
+```
+python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
+```
+
 ## Challenge 0: Architecture
 
 Before starting into the building, think about how you are envisioning the solution architecture.
