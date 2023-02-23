@@ -106,6 +106,18 @@ constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
 ``` -->
 
+### Adjusting all the configs - important!
+
+Set your GCP project id in the following files in `hack-your-pipe/02_activate/22_solution/`
+
+* `processing_service/config.py`
+* `inf_processing_service_custom/config.py`
+* `inf_processing_service/config.py`
+* `custom_train/trainer/config.py` 
+* `custom_train/prediction/config.py`
+* `config.py`
+
+
 ## Run ML Pipeline
 
 ### Set pipeline config options
@@ -150,26 +162,22 @@ terraform apply -var-file terraform.tfvars
 
 
 To include real time inference in your pipeline you have to update the Cloud Run processing service.
-That means you need build and deploy a new container version to your service. Don't forget to update the `inf_processing_service/config.py`.
+That means you need build and deploy a new container version to your service. Don't forget to update the `inf_processing_service_custom/config.py`.
 
-Build the new container.
-
-```
-gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE --tag gcr.io/$GCP_PROJECT/inference-processing-service
-```
-
-Deploy the new container to your Cloud Run service.
+Build the container, and deploy on Cloud Run (note that you are just replacing the container image of the previous inference service to this new inference service).
 
 ```
-gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=europe-west1
+gcloud builds submit $RUN_INFERENCE_PROCESSING_SERVICE_CUSTOM --tag gcr.io/$GCP_PROJECT/inference-processing-service-custom
+```
+
+```
+gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service-custom:latest --region=$GCP_REGION --allow-unauthenticated
 ```
 
 ## Run Kubeflow Pipeline in Vertex (Custom Container)
 
 Two additional steps are needed to run the pipeline with custom training and prediction. We start by preparing the code to create custom training and prediction containers.
 Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
-
-Make sure you update the config files in the `custom_train/trainer` and `custom_train/prediction` folders, and the file, `config_custom.py`.
 
 Build the containers
 

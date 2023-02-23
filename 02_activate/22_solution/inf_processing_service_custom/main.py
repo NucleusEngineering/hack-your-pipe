@@ -79,15 +79,8 @@ def index():
             instances=record_to_predict
         )
 
-        pred_response = str(endpoint_response.predictions[0])
+        anomaly = endpoint_response.predictions[0]
 
-        if pred_response == 'true':
-            anomaly = True
-        if pred_response == 'false':
-            anomaly = False
-
-        print(anomaly)
-        
         anomaly_record = {"tax": record["ecommerce"]["purchase"]["tax"], "shipping": record["ecommerce"]["purchase"]["shipping"], "value":record["ecommerce"]["purchase"]["value"], "anomaly": anomaly}
 
         rows_to_insert = [anomaly_record]
