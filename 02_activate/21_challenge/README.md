@@ -200,7 +200,7 @@ gcloud ai endpoints deploy-model <endpoint-id> \
 
 Now that your model is deployed and ready to make predictions you will include it into your Cloud Run processing pipeline.
 
-First create a BigQuery table named `bq_table_run_anomaly` and the schema `tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL` as prediction destination.
+First create a BigQuery table named `cloud_run_anomaly` and the schema `tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL` as prediction destination.
 
 <details><summary>Hint</summary>
 
@@ -532,7 +532,7 @@ You can monitor your pipeline on the link you receive in the terminal after runn
 
 ## Challenge 6: Custom Model Inference
 
-Create a new BigQuery destination table, as you did earlier, but this time let's call it `bq_table_run_anomaly_custom`.
+Create a new BigQuery destination table, as you did earlier, but this time let's call it `cloud_run_anomaly_custom`.
 
 ```
 bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.cloud_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
