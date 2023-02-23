@@ -106,7 +106,7 @@ constraints/storage.uniformBucketLevelAccess
 constraints/iam.allowedPolicyMemberDomains
 ``` -->
 
-### Adjusting all the configs in  - important!
+### Adjusting all the configs - important!
 
 Set your GCP project id in the following files in `hack-your-pipe/02_activate/22_solution/`
 
