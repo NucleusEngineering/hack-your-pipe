@@ -538,12 +538,11 @@ Create a new BigQuery destination table, as you did earlier, but this time let's
 bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.cloud_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
 ```
 
-Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`).
+Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`). Find the endpoint id of your custom model, and fill it in `inf_processing_service_custom/config.py` together with your project id.
 
 <details><summary>Hint</summary>
 
-Find the endpoint id of your custom model, and fill it in `inf_processing_service_custom/config.py` together with your project id.
-Then build the container and deploy it on Cloud Run.
+Build the container and deploy it on Cloud Run.
 
 </details>
 
