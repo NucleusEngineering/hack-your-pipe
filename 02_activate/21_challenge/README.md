@@ -535,7 +535,7 @@ You can monitor your pipeline on the link you receive in the terminal after runn
 Create a new BigQuery destination table, as you did earlier, but this time let's call it `bq_table_run_anomaly_custom`.
 
 ```
-bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.bq_table_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
+bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.cloud_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
 ```
 
 Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`).
