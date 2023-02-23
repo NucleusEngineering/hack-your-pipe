@@ -113,13 +113,13 @@ constraints/iam.allowedPolicyMemberDomains
 Set the config options in [`02_activate/22_solution/config.py`](https://github.com/NucleusEngineering/hack-your-pipe/blob/main/02_activate/22_solution/config.py). 
 
 
-### Run Kubeflow Pipeline in Vertex
+### Run Kubeflow Pipeline in Vertex (BigQueryML model)
 
 [Vertex Pipelines](https://cloud.google.com/vertex-ai/docs/pipelines/introduction) is an end-to-end and serverless ML orchestration tool. It's supports the open source frameworks [Kubeflow](https://www.kubeflow.org/) and [TFX](https://www.tensorflow.org/tfx).
 
 The full process from model training to deployment can be orchestrated using Vertex Pipelines. 
 
-To kick of the pipeline simply install the dependencies
+To kick off the pipeline simply install the dependencies
 ```
 pip install -r ./requirements.txt
 ```
@@ -132,7 +132,7 @@ python3 kf_pipe.py
 
 ## Set up processing pipe for real time inference
 
-Once the model is trained and deployed you will include a real time inference call in the datapipeline and again stream the results to BigQuery.
+Once the model is trained and deployed you will include a real time inference call in the data pipeline and again stream the results to BigQuery.
 
 Use terraform to create a new BigQuery table as sink for your predictions. 
 
@@ -150,7 +150,7 @@ terraform apply -var-file terraform.tfvars
 
 
 To include real time inference in your pipeline you have to update the Cloud Run processing service.
-That means you need build and deploy a new container version to your service.
+That means you need build and deploy a new container version to your service. Don't forget to update the `inf_processing_service/config.py`.
 
 Build the new container.
 
@@ -162,4 +162,32 @@ Deploy the new container to your Cloud Run service.
 
 ```
 gcloud run deploy hyp-run-service-data-processing --image=gcr.io/$GCP_PROJECT/inference-processing-service:latest --region=europe-west1
+```
+
+## Run Kubeflow Pipeline in Vertex (Custom Container)
+
+Two additional steps are needed to run the pipeline with custom training and prediction. We start by preparing the code to create custom training and prediction containers.
+Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
+
+Make sure you update the config files in the `custom_train/trainer` and `custom_train/prediction` folders, and the file, `config_custom.py`.
+
+Build the containers
+
+```
+gcloud builds submit custom_train/trainer/. --tag $TRAIN_IMAGE_URI
+```
+```
+gcloud builds submit  custom_train/prediction/. --tag $PREDICT_IMAGE_URI 
+```
+
+
+And kick off the pipeline same as before
+```
+pip install -r ./requirements.txt
+```
+
+and then run
+
+```
+python3 kf_pipe_custom.py
 ```
