@@ -80,4 +80,4 @@ if __name__ == "__main__":
 
     while True:
         main(endpoint)
-        time.sleep(2)
+        time.sleep(.1)

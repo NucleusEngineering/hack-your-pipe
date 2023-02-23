@@ -74,6 +74,14 @@ constraints/iam.allowedPolicyMemberDomains
 ``` -->
 
 
+### Make some data for the ML models
+
+Update the `ENDPOINT_URL` with the pubsub-proxy Cloud Run endpoint in the `config_env.sh` and run `source config_env.sh` again. Then run the simulation for minimum 5 minutes.
+
+```
+python3 ./datalayer/synth_data_stream.py --endpoint=$ENDPOINT_URL
+```
+
 ## Challenge 0: Architecture
 
 Before starting into the building, think about how you are envisioning the solution architecture.
@@ -192,7 +200,7 @@ gcloud ai endpoints deploy-model <endpoint-id> \
 
 Now that your model is deployed and ready to make predictions you will include it into your Cloud Run processing pipeline.
 
-First create a BigQuery table named `bq_table_run_anomaly` and the schema `tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL` as prediction destination.
+First create a BigQuery table named `cloud_run_anomaly` and the schema `tax:FLOAT, shipping:FLOAT, value:FLOAT, anomaly:BOOL` as prediction destination.
 
 <details><summary>Hint</summary>
 
@@ -363,6 +371,8 @@ We start by preparing the code to create custom training and prediction containe
 Containers are providing you a way to write your own preferred data processing and model training with your preferred library and environment.
 Inspect the provided code in in the `custom_train` folder.
 
+Start by updating the `project_id` in the `custom_train/trainer/config.py` and `custom_train/prediction/config.py` files.
+
 You will need to complete the code by filling in the missing snippets (3 altogether, 2 in training, 1 in prediction) in the `custom_train/trainer/train.py`, `custom_train/trainer/main.py` and `custom_train/prediction/main.py` files.
 
 <details><summary>Hint 1 - Custom training</summary>
@@ -505,7 +515,11 @@ custom_model_upload_job = gcc_aip.ModelUploadOp(
 
 </details>
 
-Once you finished the code, run it:
+Once you finished the code, install the dependencies, then run it:
+
+```
+pip install -r ./requirements.txt
+```
 
 ```
 python3 kf_pipe_custom.py
@@ -518,10 +532,10 @@ You can monitor your pipeline on the link you receive in the terminal after runn
 
 ## Challenge 6: Custom Model Inference
 
-Create a new BigQuery destination table, as you did earlier, but this time let's call it `bq_table_run_anomaly_custom`.
+Create a new BigQuery destination table, as you did earlier, but this time let's call it `cloud_run_anomaly_custom`.
 
 ```
-bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.bq_table_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
+bq mk --location=europe-west1 -t $GCP_PROJECT:ecommerce_sink.cloud_run_anomaly_custom tax:FLOAT,shipping:FLOAT,value:FLOAT,anomaly:BOOL
 ```
 
 Connect custom model inference into the data processing pipeline (see `inf_processing_service_custom`).
