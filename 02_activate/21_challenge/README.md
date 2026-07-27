@@ -366,7 +366,7 @@ Create a bucket called `$GCP_PROJECT-ai-bucket` for custom training artifacts th
 
 <details><summary>Hint</summary>
 
-[CLI-link](https://cloud.google.com/storage/docs/gsutil/commands/mb)
+[CLI-link](https://cloud.google.com/storage/docs/gcloud-storage)
 
 </details>
 
