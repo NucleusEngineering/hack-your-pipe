@@ -168,7 +168,7 @@ gcloud builds submit $DATAFLOW_TEMPLATE --tag gcr.io/$GCP_PROJECT/beam-processin
 ```
 
 ```
-gsutil mb -c standard -l $GCP_REGION gs://$GCP_PROJECT-ecommerce-events
+gcloud storage buckets create gs://$GCP_PROJECT-ecommerce-events --default-storage-class=standard --location=$GCP_REGION
 ```
 
 ```

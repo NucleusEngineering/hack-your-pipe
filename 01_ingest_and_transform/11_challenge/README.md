@@ -707,7 +707,7 @@ Checkour the [docs](https://cloud.google.com/sdk/gcloud/reference/dataflow/flex-
 
 Create a new bucket by running 
 ```
-gsutil mb -c standard -l europe-west1 gs://$GCP_PROJECT-ecommerce-events
+gcloud storage buckets create gs://$GCP_PROJECT-ecommerce-events --default-storage-class=standard --location=europe-west1
 ```
 
 Build the flex-template into your bucket using:

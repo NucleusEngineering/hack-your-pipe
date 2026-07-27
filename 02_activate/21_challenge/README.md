@@ -373,7 +373,7 @@ Create a bucket called `$GCP_PROJECT-ai-bucket` for custom training artifacts th
 <details><summary>Suggested Solution</summary>
 
 ```
-gsutil mb -l $GCP_REGION gs://$GCP_PROJECT-ai-bucket
+gcloud storage buckets create gs://$GCP_PROJECT-ai-bucket --location=$GCP_REGION
 ```
 
 </details>
